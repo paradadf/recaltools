@@ -26,33 +26,46 @@ rem Select new folder
 echo Which one is the new folder you want to compare?
 set /p "newFolder=#: "
 if "!newFolder!"=="!oldFolder!" echo You selected the same folder as before^^! & goto newFolder
-if exist !mapArray[%newFolder%]! goto compareFolders
+if exist !mapArray[%newFolder%]! echo. & goto compareFolders
 echo Incorrect input & echo. & goto newFolder
 
 :compareFolders
-rem Look for missing and modified files
+rem Look for modified files
 title Comparing !mapArray[%oldFolder%]! with !mapArray[%newFolder%]!...
-echo.
 for %%f in ("!mapArray[%newFolder%]!\*") do (
 	if exist "!mapArray[%oldFolder%]!\%%~nxf" (
 		set /a count1+=1
-		fc "!mapArray[%oldFolder%]!\%%~nxf" "!mapArray[%newFolder%]!\%%~nxf" >nul || if "!count1!"=="1" echo Modified files: & echo %%~nxf
-		if errorlevel 1 echo %%~nxf >> modified_files.txt
-	) else (
-		set /a count2+=1
-		if "!count2!"=="1" echo. & echo Files not present in !mapArray[%oldFolder%]!:
+		fc "!mapArray[%oldFolder%]!\%%~nxf" "!mapArray[%newFolder%]!\%%~nxf" >nul || if "!count1!"=="1" echo Modified files:
+		if errorlevel 1 echo %%~nxf >> modified_files.txt & set /a count2+=1 & echo %%~nxf
+	)
+)
+
+rem Look for missing files in oldFolder
+for %%f in ("!mapArray[%newFolder%]!\*") do (
+	if not exist "!mapArray[%oldFolder%]!\%%~nxf" (
+		set /a count3+=1
+		if "!count3!"=="1" echo. & echo Files not present in !mapArray[%oldFolder%]!:
 		echo %%~nxf >> missing_in_!mapArray[%oldFolder%]!.txt
+		echo %%~nxf
+	)
+)
+
+rem Look for missing files in newFolder
+for %%f in ("!mapArray[%oldFolder%]!\*") do (
+	if not exist "!mapArray[%newFolder%]!\%%~nxf" (
+		set /a count4+=1
+		if "!count4!"=="1" echo. & echo Files not present in !mapArray[%newFolder%]!:
+		echo %%~nxf >> missing_in_!mapArray[%newFolder%]!.txt
 		echo %%~nxf
 	)
 )
 echo.
 
-for %%f in ("!mapArray[%oldFolder%]!\*") do (
-	if not exist "!mapArray[%newFolder%]!\%%~nxf" echo %%~nxf >> missing_in_!mapArray[%newFolder%]!.txt
-	set /a count3+=1
-	if "!count3!"=="1" echo Files not present in !mapArray[%newFolder%]!:
-	if not exist "!mapArray[%newFolder%]!\%%~nxf" echo %%~nxf
-)
-
+rem Results
+echo Results:
+if !count2! gtr 0 echo Modified files: !count2!
+if !count3! gtr 0 echo Files not present in !mapArray[%oldFolder%]!: !count3!
+if !count4! gtr 0 echo Files not present in !mapArray[%newFolder%]!: !count4!
+if "!count2!!count4!!count6!"=="" echo !mapArray[%oldFolder%]! and !mapArray[%newFolder%]! are identical^^!
 title fastcompare ver. !releaseDate! - Comparison finished!
 pause >nul
