@@ -12,6 +12,7 @@ set mapArray[!count!]=%%a
 echo !count!: %%a
 )
 if not exist !mapArray[1]! cls & echo No folders found on current directory^^! & pause >nul & goto:eof
+if !count! lss 2 cls & echo There is only one folder on the current directory to compare^^! & pause >nul & goto:eof
 echo.
 
 :oldFolder
@@ -67,5 +68,6 @@ if !count2! gtr 0 echo Modified files: !count2!
 if !count3! gtr 0 echo Files not present in !mapArray[%oldFolder%]!: !count3!
 if !count4! gtr 0 echo Files not present in !mapArray[%newFolder%]!: !count4!
 if "!count2!!count4!!count6!"=="" echo !mapArray[%oldFolder%]! and !mapArray[%newFolder%]! are identical^^!
+
 title fastcompare ver. !releaseDate! - Comparison finished!
 pause >nul
