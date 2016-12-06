@@ -1,7 +1,7 @@
 @echo off
 setlocal EnableDelayedExpansion
 color 3f
-set releaseDate=03.12.2016
+set releaseDate=06.12.2016
 title fastcompare ver. !releaseDate!
 
 rem Show folder names in current directory
@@ -11,6 +11,7 @@ set /a count+=1
 set mapArray[!count!]=%%a
 echo !count!: %%a
 )
+if not exist !mapArray[1]! cls & echo No folders found on current directory^^! & pause >nul & goto:eof
 echo.
 
 :oldFolder
@@ -32,17 +33,19 @@ echo Incorrect input & echo. & goto newFolder
 rem Look for missing and modified files
 title Comparing !mapArray[%oldFolder%]! with !mapArray[%newFolder%]!...
 echo.
-for /f "delims=" %%f in ('dir /b /a-d "%~dp0!mapArray[%newFolder%]!"') do (
-	if exist "!mapArray[%oldFolder%]!\%%f" (
-		fc !mapArray[%oldFolder%]!\* !mapArray[%newFolder%]!\*
-		if errorlevel 1 echo %%f >> modified_files.txt
+for %%f in ("!mapArray[%newFolder%]!\*") do (
+	if exist "!mapArray[%oldFolder%]!\%%~nxf" (
+		fc "!mapArray[%oldFolder%]!\%%~nxf" "!mapArray[%newFolder%]!\%%~nxf"
+		if errorlevel 1 echo %%~nxf >> modified_files.txt
 	) else (
-		echo %%f >> missing_in_!mapArray[%oldFolder%]!.txt
+		echo %%~nxf >> missing_in_!mapArray[%oldFolder%]!.txt
+		echo %%~nxf		not present in !mapArray[%oldFolder%]!
 	)
 )
 
-for /f "delims=" %%f in ('dir /b /a-d "%~dp0!mapArray[%oldFolder%]!"') do (
-	if not exist "!mapArray[%newFolder%]!\%%f" echo %%f >> missing_in_!mapArray[%newFolder%]!.txt
+for %%f in ("!mapArray[%oldFolder%]!\*") do (
+	if not exist "!mapArray[%newFolder%]!\%%~nxf" echo %%~nxf >> missing_in_!mapArray[%newFolder%]!.txt
+	echo %%~nxf		not present in !mapArray[%newFolder%]!
 )
 
 title fastcompare ver. !releaseDate! - Comparison finished!
