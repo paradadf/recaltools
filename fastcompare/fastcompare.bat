@@ -39,9 +39,8 @@ for %%f in ("!mapArray[%newFolder%]!\*") do (
 		fc "!mapArray[%oldFolder%]!\%%~nxf" "!mapArray[%newFolder%]!\%%~nxf" >nul || if "!count1!"=="1" echo Modified files: & echo %%~nxf
 		if errorlevel 1 echo %%~nxf >> modified_files.txt
 	) else (
-		echo.
 		set /a count2+=1
-		if "!count2!"=="1" echo Files not present in !mapArray[%oldFolder%]!:
+		if "!count2!"=="1" echo. & echo Files not present in !mapArray[%oldFolder%]!:
 		echo %%~nxf >> missing_in_!mapArray[%oldFolder%]!.txt
 		echo %%~nxf
 	)
