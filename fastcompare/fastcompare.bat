@@ -35,11 +35,13 @@ title Comparing !mapArray[%oldFolder%]! with !mapArray[%newFolder%]!...
 echo.
 for %%f in ("!mapArray[%newFolder%]!\*") do (
 	if exist "!mapArray[%oldFolder%]!\%%~nxf" (
-		fc "!mapArray[%oldFolder%]!\%%~nxf" "!mapArray[%newFolder%]!\%%~nxf"
+		set /a count1+=1
+		fc "!mapArray[%oldFolder%]!\%%~nxf" "!mapArray[%newFolder%]!\%%~nxf" >nul || if "!count1!"=="1" echo Modified files: & echo %%~nxf
 		if errorlevel 1 echo %%~nxf >> modified_files.txt
 	) else (
-		set /a count1+=1
-		if "!count1!"=="1" echo Files not present in !mapArray[%oldFolder%]!:
+		echo.
+		set /a count2+=1
+		if "!count2!"=="1" echo Files not present in !mapArray[%oldFolder%]!:
 		echo %%~nxf >> missing_in_!mapArray[%oldFolder%]!.txt
 		echo %%~nxf
 	)
@@ -48,8 +50,8 @@ echo.
 
 for %%f in ("!mapArray[%oldFolder%]!\*") do (
 	if not exist "!mapArray[%newFolder%]!\%%~nxf" echo %%~nxf >> missing_in_!mapArray[%newFolder%]!.txt
-	set /a count2+=1
-	if "!count2!"=="1" echo Files not present in !mapArray[%newFolder%]!:
+	set /a count3+=1
+	if "!count3!"=="1" echo Files not present in !mapArray[%newFolder%]!:
 	if not exist "!mapArray[%newFolder%]!\%%~nxf" echo %%~nxf
 )
 
