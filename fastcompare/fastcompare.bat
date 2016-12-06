@@ -38,14 +38,19 @@ for %%f in ("!mapArray[%newFolder%]!\*") do (
 		fc "!mapArray[%oldFolder%]!\%%~nxf" "!mapArray[%newFolder%]!\%%~nxf"
 		if errorlevel 1 echo %%~nxf >> modified_files.txt
 	) else (
+		set /a count1+=1
+		if "!count1!"=="1" echo Files not present in !mapArray[%oldFolder%]!:
 		echo %%~nxf >> missing_in_!mapArray[%oldFolder%]!.txt
-		echo %%~nxf		not present in !mapArray[%oldFolder%]!
+		echo %%~nxf
 	)
 )
+echo.
 
 for %%f in ("!mapArray[%oldFolder%]!\*") do (
 	if not exist "!mapArray[%newFolder%]!\%%~nxf" echo %%~nxf >> missing_in_!mapArray[%newFolder%]!.txt
-	echo %%~nxf		not present in !mapArray[%newFolder%]!
+	set /a count2+=1
+	if "!count2!"=="1" echo Files not present in !mapArray[%newFolder%]!:
+	if not exist "!mapArray[%newFolder%]!\%%~nxf" echo %%~nxf
 )
 
 title fastcompare ver. !releaseDate! - Comparison finished!
