@@ -1,7 +1,7 @@
 @echo off
 setlocal EnableDelayedExpansion
 color 3f
-set releaseDate=03.11.2016
+set releaseDate=07.11.2016
 title fastscraper ver. !releaseDate!
 
 :scraperEXE
@@ -28,7 +28,7 @@ rem Flags - Static parameters
 		set extraExt=-extra_ext=".scummvm,.ipf,.mx1,.mx2,.exe,.ws,.wsc,.wad"
 	
 	rem jpg or png, the format to write the images. (default "jpg")
-		set imgFormat=-img_format=".jpg"
+		set imgFormat=-img_format="jpg"
 		
 	rem The order to choose for language if there is more than one for a value. (en, fr, es, de, pt) (default "en")
 		set langSS=-lang="en,es,pt,de,fr"
@@ -83,7 +83,7 @@ if /i "!appendXML!"=="n" goto fullMode
 echo Incorrect input & goto modeSelection
 
 	:appendMode
-	set "appendMode=-append" & goto neogeoMode
+	set appendMode=-append & goto neogeoMode
 
 	:fullMode
 	set "appendMode=" & goto neogeoMode
