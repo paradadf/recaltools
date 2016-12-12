@@ -11,12 +11,13 @@ fastsorter
 
 Sort the generated lists to separate folders.
 
-> Instructions:
+Instructions:
 
-> - Copy the list into a text file called *fastsorter.txt* to use it as source.
-> - If you create the following text files, they will be used instead:  
-	"*Complete DAT.txt*"  
-	"*Parents only.txt*"  
-	"*NeoGeo only (including NeoGeo Clones)*"  
-	"*NeoGeo Parents only*"  
-	"*Complete DAT (without NeoGeo)*" 
+Copy the list into a text file called *fastsorter.txt* to use it as source.
+If you create the following text files, they will be used instead:  
+
+"*Complete DAT.txt*"  
+"*Parents only.txt*"  
+"*NeoGeo only (including NeoGeo Clones).txt*"  
+"*NeoGeo Parents only.txt*"  
+"*Complete DAT (without NeoGeo).txt*" 
