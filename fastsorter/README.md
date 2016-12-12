@@ -1,10 +1,22 @@
-WINDOWS BATCH:
-Place fastsorter.bat on your roms folder and copy the clean gamelist to a text file called 'fastsorter.txt' next to it.
-If you prefer, you can create specific gamelists instead, e.g. 'Parents only.txt', which would be read first.
-Instructions: http://imgur.com/a/iyxKF
+Automatic Gamelists Filter
+===================
 
+Filter **fbalpha 0.2.97.39** and **mame2003** roms by their status.
+**bestList** considers duplicates to minimize the gamelist and a prefered core for conflicting roms.
 
-WIP:
-OS X & LINUX BASH:
-#!/bin/bash
-ROMNAME in `cat fastsorter.txt` ; do ; mkdir -p "Parents only" ;  cp $ROMNAME "Parents only" ; done
+----------
+
+fastsorter
+===================
+
+Sort the generated lists to separate folders.
+
+> Instructions:
+
+> - Copy the list into a text file called *fastsorter.txt* to use it as source.
+> - If you create the following text files, they will be used instead:  
+	"*Complete DAT.txt*"  
+	"*Parents only.txt*"  
+	"*NeoGeo only (including NeoGeo Clones)*"  
+	"*NeoGeo Parents only*"  
+	"*Complete DAT (without NeoGeo)*" 
