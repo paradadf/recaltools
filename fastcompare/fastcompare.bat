@@ -1,7 +1,7 @@
 @echo off
 setlocal EnableDelayedExpansion
 color 3f
-set releaseDate=06.12.2016
+set releaseDate=15.12.2016
 title fastcompare ver. !releaseDate!
 
 rem Show folder names in current directory
@@ -11,8 +11,18 @@ set /a count+=1
 set mapArray[!count!]=%%a
 echo !count!: %%a
 )
+echo.
+
+:checkFolders
+rem 0 or 1 folder -> nothing to compare. 2 folders -> make automatic selection. 3 or more folders -> ask for selection.
 if not exist !mapArray[1]! cls & echo No folders found on current directory^^! & pause >nul & goto:eof
 if !count! lss 2 cls & echo There is only one folder on the current directory to compare^^! & pause >nul & goto:eof
+if !count! gtr 2 goto oldFolder
+if !count! equ 2 set "oldFolder=1" & set "newFolder=2"
+set /p "twoFolders=Compare !mapArray[1]! with !mapArray[2]!? [Y/N]: "
+if /i "!twoFolders!"=="y" goto modScan
+if /i "!twoFolders!"=="n" echo There are no other folders available on the current directory^^! & pause >nul & goto:eof
+echo Incorrect input^^! & echo. & goto checkFolders
 echo.
 
 :oldFolder
@@ -20,17 +30,25 @@ rem Select old folder
 echo Which one is the old folder?
 set /p "oldFolder=#: "
 if exist !mapArray[%oldFolder%]! goto newFolder
-echo Incorrect input & echo. & goto oldFolder
+echo Incorrect input^^! & echo. & goto oldFolder
 
 :newFolder
 rem Select new folder
 echo Which one is the new folder you want to compare?
 set /p "newFolder=#: "
 if "!newFolder!"=="!oldFolder!" echo You selected the same folder as before^^! & goto newFolder
-if exist !mapArray[%newFolder%]! echo. & goto compareFolders
-echo Incorrect input & echo. & goto newFolder
+if exist !mapArray[%newFolder%]! echo. & goto modScan
+echo Incorrect input^^! & echo. & goto newFolder
 
-:compareFolders
+:modScan
+rem Scan for modified files or only missing files?
+set /p "mod=Scan for modified files? [Y/N]: "
+if "!mod!"=="y" goto modFiles
+if "!mod!"=="n" goto missFiles
+echo Incorrect input^^! & echo. & goto modScan
+
+:modFiles
+echo.
 rem Look for modified files
 title Comparing !mapArray[%oldFolder%]! with !mapArray[%newFolder%]!...
 for %%f in ("!mapArray[%newFolder%]!\*") do (
@@ -41,6 +59,7 @@ for %%f in ("!mapArray[%newFolder%]!\*") do (
 	)
 )
 
+:missFiles
 rem Look for missing files in oldFolder
 for %%f in ("!mapArray[%newFolder%]!\*") do (
 	if not exist "!mapArray[%oldFolder%]!\%%~nxf" (
