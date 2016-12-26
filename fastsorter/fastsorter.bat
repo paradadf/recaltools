@@ -1,52 +1,104 @@
 @echo off
+setlocal EnableDelayedExpansion
 color 3f
-set releaseDate=08.12.2016
+set releaseDate=26.12.2016
 title fastsorter ver. %releaseDate%
 
-:whichSystem
-rem Select system folder
-echo Which system do you want to sort?
-echo 1: fba_libretro & echo.2: mame
-set /p "system=#: "
-if "%system%"=="1" set "system=fba_libretro" & echo. & goto whichFolder
-if "%system%"=="2" set "system=mame" & echo. & goto whichFolder
-echo Incorrect input! & echo. & goto whichSystem
+rem Set defaults to launch directory
+set rootSource=%~dp0
+set rootFolder=%~dp0
 
-:whichFolder
-rem Select the folder where the roms will be copied
-echo Where do you want to copy your roms?
-echo 1: Complete DAT & echo.2: Parents only & echo.3: Parents only (without NeoGeo) & echo.4: NeoGeo only (including NeoGeo Clones) & echo.5: NeoGeo Parents only & echo.6: Complete DAT (without NeoGeo)
-set /p "folder=#: "
-if "%folder%"=="1" set "destFolder=Complete DAT" & echo. & goto whichGamelist
-if "%folder%"=="2" set "destFolder=Parents only" & echo. & goto whichGamelist
-if "%folder%"=="3" set "destFolder=Parents only (without NeoGeo)" & echo. & goto whichGamelist
-if "%folder%"=="4" set "destFolder=NeoGeo only (including NeoGeo Clones)" & echo. & goto whichGamelist
-if "%folder%"=="5" set "destFolder=NeoGeo Parents only" & echo. & goto whichGamelist
-if "%folder%"=="6" set "destFolder=Complete DAT (without NeoGeo)" & echo. & goto whichGamelist
-echo Incorrect input! & echo. & goto whichFolder
+:listSources
+title fastsorter ver. %releaseDate% - Source file selection
+rem Show folder names in current directory
+echo Available sources for sorting:
+for %%a in (*.txt) do (
+set /a count+=1
+set mapArray[!count!]=%%a
+echo !count!: %%a
+)
 
-:whichGamelist
-rem Check if a corresponding *.txt exists and use it instead of fastsorter.txt
-if exist "%destFolder%.txt" (set "gamelist=%destFolder%") else set "gamelist=fastsorter"
-if "%gamelist%"=="fastsorter" echo If '%destFolder%.txt' exists, it will be used as source, otherwise 'fastsorter.txt' & echo.
+:checkSources
+set type=source
+if not exist !mapArray[1]! cls & echo No source file (.txt) found on current directory^^! & goto SUB_folderBrowser
+if !count! gtr 1 set /a browser=!count!+1 & echo.!browser!: Open Folder Browser? & goto whichSource
+if !count! equ 1 echo. & set /p "oneSource=Use !mapArray[1]! as source? [Y/N]: "
+if /i "%oneSource%"=="y" (set "sourceFile=1" & echo. & goto listFolders) else goto SUB_folderBrowser
+
+:whichSource
 echo.
+rem Select source file (.txt)
+echo Which one is the source file you want to use? Choose !browser! to change directory.
+set /p "sourceFile=#: "
+if %sourceFile% equ !browser! goto SUB_folderBrowser
+if exist !mapArray[%sourceFile%]! echo. & goto listFolders
+echo Incorrect input^^! & goto whichSource
+
+:listFolders
+title fastsorter ver. %releaseDate% - System folder selection
+rem Show folder names in current directory
+cd %~dp0
+set count=0
+echo Available folders for sorting:
+for /d %%a in (*) do (
+set /a count+=1
+set mapArray2[!count!]=%%a
+echo !count!: %%a
+)
+
+:checkFolders
+set type=root
+if not exist !mapArray2[1]! cls & echo No folders found on current directory^^! & goto SUB_folderBrowser
+if !count! gtr 1 set /a browser=!count!+1 & echo.!browser!: Open Folder Browser? & goto whichSystem
+if !count! equ 1 echo. & set /p "oneFolder=Use !mapArray2[1]! as target? [Y/N]: "
+if /i "%oneFolder%"=="y" (set "whichSystem=1" & goto whichFolder) else goto SUB_folderBrowser
+
+:whichSystem
+echo.
+rem Select system folder
+echo Which system do you want to sort? Choose !browser! to change directory.
+set /p "whichSystem=#: "
+if %whichSystem% equ !browser! goto SUB_folderBrowser
+if exist !mapArray2[%whichSystem%]! echo. & goto createFolder
+echo Incorrect input^^! & goto whichSystem
 
 :createFolder
-rem Create the selected folder
-md ".\%system%\%destFolder%"
+rem Create destination folder
+set destFolder=!mapArray[%sourceFile%]:~0,-4!
+if not exist ".\!mapArray2[%whichSystem%]!\%destFolder%" md ".\!mapArray2[%whichSystem%]!\%destFolder%"
 
-rem Look inside the gamelist and copy the roms to the destination folder
-if not exist "%gamelist%.txt" echo The file %gamelist%.txt is missing! & echo. & pause & goto:eof
-title fastsorter ver. %releaseDate% - Sorting roms in progress...
-for /f "delims=" %%a in ('type "%gamelist%.txt"') do (
-	if exist ".\%system%\%%a" (
-		copy ".\%system%\%%a" ".\%system%\%destFolder%\%%~nxa" >nul | echo %%a
+:sortFiles
+rem Look inside the source file and copy the files to the destination folder
+title fastsorter ver. %releaseDate% - Sorting files in progress...
+for /f "delims=" %%a in ('type "%rootSource%\!mapArray[%sourceFile%]!"') do (
+	if exist ".\!mapArray2[%whichSystem%]!\%%a" (
+		copy ".\!mapArray2[%whichSystem%]!\%%a" ".\!mapArray2[%whichSystem%]!\%destFolder%\%%~nxa" >nul & echo %%a
 	) else (
 		echo.
 		echo %%a missing & echo.
 		)
 )
 
-title fastsorter ver. %releaseDate% - Sorting roms finished!
+title fastsorter ver. %releaseDate% - Sorting files finished!
 
-pause >nul
+popd & pause >nul & exit
+
+:SUB_folderBrowser
+if !count! lss 1 set /p "openBrowser=Open Folder Browser? [Y/N]: "
+if !count! lss 1 (
+	if not "%openBrowser%"=="y" exit
+)
+set count=0 & echo Opening Folder Browser... & echo.
+if "%type%"=="root" echo Select the root system folder, not the system itself^^!
+
+rem PowerShell-Subroutine to open a Folder Browser
+set "psCommand="(new-object -COM 'Shell.Application')^
+.BrowseForFolder(0,'Please choose a %type% folder.',0,0).self.path""
+for /f "usebackq delims=" %%i in (`powershell %psCommand%`) do set "newRoot=%%i"
+
+if "%type%"=="source" set rootSource=%newRoot%
+if "%type%"=="root" set rootFolder=%newRoot%
+
+rem Change working directory
+if "%type%"=="source" cls & pushd %rootSource% & goto listSources
+if "%type%"=="root" cls & pushd %rootFolder% & echo Selected source file: !mapArray[%sourceFile%]! & echo. & goto listFolders
