@@ -1,15 +1,22 @@
 @echo off
 setlocal EnableDelayedExpansion
 color 3f
-set releaseDate=26.12.2016
+set releaseDate=29.12.2016
 title fastsorter ver. %releaseDate%
+
+rem Copy sorted files into destination folder? [Y/N]
+set "copyMode=y"
+if /i "%copyMode%"=="y" (set appendTitle=[Copy Mode]) else set appendTitle=[Log Mode]
+
+rem Set prefix for output file (used only if copyMode=n)
+set prefixMiss=missing_in_
 
 rem Set defaults to launch directory
 set rootSource=%~dp0
 set rootFolder=%~dp0
 
 :listSources
-title fastsorter ver. %releaseDate% - Source file selection
+title fastsorter ver. %releaseDate% - Source file selection %appendTitle%
 rem Show folder names in current directory
 echo Available sources for sorting:
 for %%a in (*.txt) do (
@@ -35,7 +42,7 @@ if exist !mapArray[%sourceFile%]! echo. & goto listFolders
 echo Incorrect input^^! & goto whichSource
 
 :listFolders
-title fastsorter ver. %releaseDate% - System folder selection
+title fastsorter ver. %releaseDate% - System folder selection %appendTitle%
 rem Show folder names in current directory
 cd %~dp0
 set count=0
@@ -64,22 +71,25 @@ echo Incorrect input^^! & goto whichSystem
 
 :createFolder
 rem Create destination folder
+if /i not "%copyMode%"=="y" goto sortFiles
 set destFolder=!mapArray[%sourceFile%]:~0,-4!
 if not exist ".\!mapArray2[%whichSystem%]!\%destFolder%" md ".\!mapArray2[%whichSystem%]!\%destFolder%"
 
 :sortFiles
 rem Look inside the source file and copy the files to the destination folder
-title fastsorter ver. %releaseDate% - Sorting files in progress...
+title fastsorter ver. %releaseDate% - Sorting files in progress... %appendTitle%
 for /f "delims=" %%a in ('type "%rootSource%\!mapArray[%sourceFile%]!"') do (
 	if exist ".\!mapArray2[%whichSystem%]!\%%a" (
-		copy ".\!mapArray2[%whichSystem%]!\%%a" ".\!mapArray2[%whichSystem%]!\%destFolder%\%%~nxa" >nul & echo %%a
+		if /i "%copyMode%"=="y" copy ".\!mapArray2[%whichSystem%]!\%%a" ".\!mapArray2[%whichSystem%]!\%destFolder%\%%~nxa" >nul
+		echo %%a
 	) else (
 		echo.
 		echo %%a missing & echo.
+		if /i not "%copyMode%"=="y" echo %%a >> "%~dp0%prefixMiss%!mapArray2[%whichSystem%]!.txt"
 		)
 )
 
-title fastsorter ver. %releaseDate% - Sorting files finished!
+title fastsorter ver. %releaseDate% - Sorting files finished^^! %appendTitle%
 
 popd & pause >nul & exit
 
