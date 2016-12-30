@@ -93,6 +93,7 @@ for /f "delims=" %%a in ('type "%rootSource%\!mapArray[%sourceFile%]!"') do (
 		echo %%a missing & echo.
 		if /i not "%copyMode%"=="y" echo %%a >> "%~dp0%prefixMiss%%system%.txt"
 		)
+	endlocal
 )
 
 title fastsorter ver. %releaseDate% - Sorting files finished! %appendTitle%
