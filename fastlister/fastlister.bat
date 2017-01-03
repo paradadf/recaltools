@@ -1,7 +1,7 @@
 @echo off
 color 3f
-set releaseDate=02.01.2017
-title fastlister ver. !releaseDate!
+set releaseDate=03.01.2017
+title fastlister ver. %releaseDate%
 
 rem List of excluded extensions
 set excluded=.xml .txt
