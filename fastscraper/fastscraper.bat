@@ -1,21 +1,11 @@
 @echo off
-setlocal EnableDelayedExpansion
 color 3f
-set releaseDate=07.11.2016
-title fastscraper ver. !releaseDate!
+set releaseDate=05.01.2017
+title fastscraper ver. %releaseDate%
 
-:scraperEXE
-rem Check if scraper.exe is on root folder
-if exist scraper.exe goto scraperVersion
-echo scraper.exe missing
-set /p "download=Do you want to open the URL to download it? [Y/N]: "
-if /i "!download!"=="y" start https://github.com/sselph/scraper/releases & goto:eof
-if /i "!download!"=="n" goto:eof
-echo Incorrect input & goto scraperEXE
-
-:scraperVersion
-rem Show scraper version
-echo scraper.exe's version found: & scraper.exe -version
+rem Set ScrennScraper credentials
+set username=
+set password=
 
 rem Flags - Static parameters
 	rem If true, add roms that are not found as an empty gamelist entry.
@@ -65,21 +55,46 @@ rem Flags - Static parameters
 	
 	rem Use N worker threads to process roms. (default 1)
 		set workersN=-workers=4
+		
+	rem The `username` for registered ScreenScraper users.
+		set username=-ss_user=%username%
+		
+	rem The `password` for registered ScreenScraper users.
+		set password=-ss_password=%password%
 
+rem Set default roms directory to launch directory
+set "romsDir=%cd%"	
+
+:scraperEXE
+rem Check if scraper.exe is on root folder
+if exist scraper.exe goto scraperVersion
+echo scraper.exe missing
+set /p "download=Do you want to open the URL to download it? [Y/N]: "
+if /i "%download%"=="y" start https://github.com/sselph/scraper/releases & goto:eof
+if /i "%download%"=="n" goto:eof
+echo Incorrect input! & goto scraperEXE
+
+:scraperVersion
+rem Show scraper version
+echo scraper.exe's version found: & scraper.exe -version		
+		
 :systemSelection
+setlocal EnableDelayedExpansion
 rem Select the system to scrape (type "all" to scrape all folders)
-set /p "system=Which system(s) do you want to scrape? All? "
-if "%system%"=="" echo Incorrect input & goto systemSelection
+echo Which system(s) do you want to scrape? All? Type "cd" to open the folder browser.
+set /p "system="
+if "%system%"=="cd" goto SUB_folderBrowser
+if "%system%"=="" echo Incorrect input^^! & goto systemSelection
 if /i not "%system%"=="all" goto modeSelection
 	set "system="
 	for /f "delims=" %%f in ('dir /b /a:d') do set system=!system! %%f
 
 :modeSelection
 rem Choose to append an existing (y) or create a new gamelist (n)
-if "!refreshXML!"=="-refresh=true" goto fullMode
+if "%refreshXML%"=="-refresh=true" goto fullMode
 set /p "appendXML=Would you like to append existing gamelists? [Y/N]: "
-if /i "!appendXML!"=="y" goto appendMode
-if /i "!appendXML!"=="n" goto fullMode
+if /i "%appendXML%"=="y" goto appendMode
+if /i "%appendXML%"=="n" goto fullMode
 echo Incorrect input & goto modeSelection
 
 	:appendMode
@@ -91,12 +106,11 @@ echo Incorrect input & goto modeSelection
 :neogeoMode
 rem Select source for NeoGeo: mameDB.com (mame-mode) and theGamesDB.net (non-mame mode)
 echo %system%|findstr /lic:"neogeo" >nul
-if "%errorlevel%"=="0" (
+if not "%errorlevel%"=="0" goto startTime
 set /p "nonmameMode=Scrape NeoGeo in non-mame mode (use theGamesDB)? [Y/N]: "
-if /i "!nonmameMode!"=="y" goto startTime
-if /i "!nonmameMode!"=="n" goto startTime 
-echo Incorrect input & goto neogeoMode
-)
+if /i "%nonmameMode%"=="y" goto startTime
+if /i "%nonmameMode%"=="n" goto startTime 
+echo Incorrect input^^! & goto neogeoMode
 
 :startTime
 rem Save start time
@@ -104,7 +118,7 @@ set startTime=%time%
 
 rem ******************** MAIN CODE SECTION
 
-for %%i in (%system%) do (
+for %%i in (!system!) do (
 
 rem Check if mame device is selected
 rem Comma separated order to prefer images, s=snap, t=title, m=marquee, c=cabinet. (default "t,m,s,c")
@@ -116,10 +130,10 @@ echo %%i|findstr /lic:"neogeo" >nul && set arcade=-mame -mame_img="s,m,t"
 
 rem Change flags if NeoGeo in non-mame mode was selected
 rem Comma separated order to prefer images, s=snapshot, b=boxart, f=fanart, a=banner, l=logo, 3b=3D boxart. (default "b")
-echo %%i|findstr /lic:"neogeo" >nul && if "!nonmameMode!"=="y" set arcade=-console_img="b,s"
+echo %%i|findstr /lic:"neogeo" >nul && if "%nonmameMode%"=="y" set arcade=-console_img="b,s"
 
-if "!arcade!"=="" (
-set imageMode=!consoleIMG!
+if "%arcade%"=="" (
+set imageMode=%consoleIMG%
 ) else (
 set "imageMode="
 )
@@ -130,14 +144,13 @@ title Scraping %%i...
 rem Scraping roms
 echo Scraping %%i in progress. Please wait...
 echo.
-scraper.exe !appendMode! !arcade! -rom_dir="%%i" !imagePath! -image_dir="%%i\!imagePath:~15,-1!" !imageSuffix! -output_file="%%i\gamelist.xml" -missing="%%i\_%%i_missing.txt" !addNotFound! !imageMode! !extraExt! !imgFormat! !langSS! !noThumb! !refreshXML! !regionSS! !maxWidth! !useGDB! !useNoIntroName! !useOVGDB! !useSS! !workersN!
+scraper.exe %appendMode% %arcade% -rom_dir="!romsDir!\%%i" %imagePath% -image_dir="!romsDir!\%%i\%imagePath:~15,-1%" %imageSuffix% -output_file="!romsDir!\%%i\gamelist.xml" -missing="!romsDir!\%%i\_%%i_missing.txt" %addNotFound% %imageMode% %extraExt% %imgFormat% %langSS% %noThumb% %refreshXML% %regionSS% %maxWidth% %useGDB% %useNoIntroName% %useOVGDB% %useSS% %workersN%
 echo.
-
 )
 
 rem ******************** END MAIN CODE SECTION
 
-title fastscraper ver. !releaseDate! - Scraping has finished
+title fastscraper ver. %releaseDate% - Scraping has finished^^!
 
 rem Save finish time
 set endTime=%time%
@@ -171,4 +184,20 @@ rem Change formatting for the start and end times
     echo          ---------------
     echo Duration : %DURATION%
 	
-pause >nul
+pause >nul & exit
+
+:SUB_folderBrowser
+setlocal DisableDelayedExpansion
+echo.
+echo Opening Folder Browser...
+
+rem PowerShell-Subroutine to open a Folder Browser
+set "psCommand="(new-object -COM 'Shell.Application')^
+.BrowseForFolder(0,'Please choose a folder.',0,0).self.path""
+for /f "usebackq delims=" %%i in (`powershell %psCommand%`) do set "newRoot=%%i"
+
+set "romsDir=%newRoot%"
+cls & echo Selected roms folder: %romsDir%
+rem Check if scraping from network drive and show warning about stopping ES
+if not x%romsDir:\\=%==x%newRoot% echo Don't forget to stop EmulationStation before scraping!
+echo. & goto systemSelection
