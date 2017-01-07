@@ -1,66 +1,76 @@
 @echo off
 color 3f
-set releaseDate=05.01.2017
+set releaseDate=08.01.2017
 title fastscraper ver. %releaseDate%
 
-rem Set ScrennScraper credentials
-set username=
-set password=
+rem Set ScreenScraper credentials
+set username=""
+set password=""
 
 rem Flags - Static parameters
 	rem If true, add roms that are not found as an empty gamelist entry.
 		set addNotFound=-add_not_found=false
 
 	rem Comma separated order to prefer images, s=snapshot, b=boxart, f=fanart, a=banner, l=logo, 3b=3D boxart. (default "b")
-		set consoleIMG=-console_img="b,s"
+		set consoleImg=-console_img="b,s"
+
+	rem Comma seperated order to prefer console sources, ss=screenscraper, ovgdb=OpenVGDB, gdb=theGamesDB (default "gdb")
+		set consoleSrc=-console_src="ss"
 		
+	rem If false, don't download any images, instead see if the expected file is stored locally already. (default true)
+		set downloadImg=-download_images=true
+
 	rem Comma separated list of extensions to also include in the scraper.
 		set extraExt=-extra_ext=".scummvm,.ipf,.mx1,.mx2,.exe,.ws,.wsc,.wad"
-	
+
 	rem jpg or png, the format to write the images. (default "jpg")
 		set imgFormat=-img_format="jpg"
-		
-	rem The order to choose for language if there is more than one for a value. (en, fr, es, de, pt) (default "en")
-		set langSS=-lang="en,es,pt,de,fr"
-	
+
 	rem The path to use for images in gamelist.xml. (default "images")
 		set imagePath=-image_path="./downloaded_images"
-	
+
 	rem  The suffix added after rom name when creating image files. (default "-image")
 		set imageSuffix=-image_suffix="-image"
 		
+	rem The order to choose for language if there is more than one for a value. (en, fr, es, de, pt) (default "en")
+		set langSS=-lang="en,es,pt,de,fr"
+
+	rem Comma separated order to prefer images, s=snap, t=title, m=marquee, c=cabniet. (default "t,m,s,c")
+	rem Not documented yet: b=boxart, 3b=3D boxart (https://github.com/sselph/scraper/issues/126)
+		set mameImg=-mame_img="b,s,m,t"
+		
+	rem Comma seperated order to prefer mame sources, ss=screenscraper, mamedb=mamedb-mirror, gdb=theGamesDB-neogeo (default "mamedb,gdb")
+		set mameSrc=-mame_src="ss"
+
+	rem The max height of images. Larger images will be resized.
+		set maxHeight=-max_height=0
+
 	rem The max width of images. Larger images will be resized. (default 400)
 		set maxWidth=-max_width=400
 
 	rem Don't add thumbnails to the gamelist.
 		set noThumb=-no_thumb=true
-	
+
 	rem Information will be attempted to be downloaded again but won't remove roms that are not scraped.
 		set refreshXML=-refresh=false
-	
+
 	rem The order to choose for region if there is more than one for a value. (us, eu, jp, fr, xx) (default "us,eu,jp,fr,xx")
 		set regionSS=-region="us,eu,jp,fr,xx"
-    
-	rem Use the hash.csv and theGamesDB metadata. (default true)
-		set useGDB=-use_gdb=false
-	
-    rem Use the name in the No-Intro DB instead of the one in the GDB. (default true)
-		set useNoIntroName=-use_nointro_name=true
-	
-	rem Use the OpenVGDB if the hash isn't in hash.csv.
-		set useOVGDB=-use_ovgdb=false
-	
-	rem Use the ScreenScraper.fr as a datasource.
-		set useSS=-use_ss=true
-	
-	rem Use N worker threads to process roms. (default 1)
-		set workersN=-workers=4
-		
+
 	rem The `username` for registered ScreenScraper users.
 		set username=-ss_user=%username%
-		
+
 	rem The `password` for registered ScreenScraper users.
 		set password=-ss_password=%password%
+	
+	rem If true, use the filename minus the extension as the game title in xml.
+		set useFilename=-use_filename=false
+
+    	rem Use the name in the No-Intro DB instead of the one in the GDB. (default true)
+		set useNoIntroName=-use_nointro_name=true
+
+	rem Use N worker threads to process roms. (default 1)
+		set workersN=-workers=4
 
 rem Set default roms directory to launch directory
 set "romsDir=%cd%"	
@@ -69,48 +79,39 @@ set "romsDir=%cd%"
 rem Check if scraper.exe is on root folder
 if exist scraper.exe goto scraperVersion
 echo scraper.exe missing
-set /p "download=Do you want to open the URL to download it? [Y/N]: "
-if /i "%download%"=="y" start https://github.com/sselph/scraper/releases & goto:eof
-if /i "%download%"=="n" goto:eof
+set /P "download=Do you want to open the URL to download it? [Y/N]: "
+if /I "%download%"=="y" start https://github.com/sselph/scraper/releases & goto:eof
+if /I "%download%"=="n" goto:eof
 echo Incorrect input! & goto scraperEXE
 
 :scraperVersion
 rem Show scraper version
 echo scraper.exe's version found: & scraper.exe -version		
-		
+	
 :systemSelection
-setlocal EnableDelayedExpansion
 rem Select the system to scrape (type "all" to scrape all folders)
+setlocal EnableDelayedExpansion
 echo Which system(s) do you want to scrape? All? Type "cd" to open the folder browser.
-set /p "system="
+set /P "system="
 if "%system%"=="cd" goto SUB_folderBrowser
 if "%system%"=="" echo Incorrect input^^! & goto systemSelection
-if /i not "%system%"=="all" goto modeSelection
+if /I not "%system%"=="all" goto modeSelection
 	set "system="
-	for /f "delims=" %%f in ('dir /b /a:d') do set system=!system! %%f
+	for /F "delims=" %%f in ('dir /B /A:D') do set system=!system! %%f
 
 :modeSelection
 rem Choose to append an existing (y) or create a new gamelist (n)
 if "%refreshXML%"=="-refresh=true" goto fullMode
-set /p "appendXML=Would you like to append existing gamelists? [Y/N]: "
-if /i "%appendXML%"=="y" goto appendMode
-if /i "%appendXML%"=="n" goto fullMode
+set /P "appendXML=Would you like to append existing gamelists? [Y/N]: "
+if /I "%appendXML%"=="y" goto appendMode
+if /I "%appendXML%"=="n" goto fullMode
 echo Incorrect input & goto modeSelection
 
 	:appendMode
-	set appendMode=-append & goto neogeoMode
+	set appendMode=-append & goto startTime
 
 	:fullMode
-	set "appendMode=" & goto neogeoMode
-
-:neogeoMode
-rem Select source for NeoGeo: mameDB.com (mame-mode) and theGamesDB.net (non-mame mode)
-echo %system%|findstr /lic:"neogeo" >nul
-if not "%errorlevel%"=="0" goto startTime
-set /p "nonmameMode=Scrape NeoGeo in non-mame mode (use theGamesDB)? [Y/N]: "
-if /i "%nonmameMode%"=="y" goto startTime
-if /i "%nonmameMode%"=="n" goto startTime 
-echo Incorrect input^^! & goto neogeoMode
+	set "appendMode="
 
 :startTime
 rem Save start time
@@ -118,33 +119,25 @@ set startTime=%time%
 
 rem ******************** MAIN CODE SECTION
 
-for %%i in (!system!) do (
+for %%i in (%system%) do (
 
-rem Check if mame device is selected
-rem Comma separated order to prefer images, s=snap, t=title, m=marquee, c=cabinet. (default "t,m,s,c")
+rem Check if mame device is selected and set corresponding flags
 set "arcade="
-echo %%i|findstr /lic:"fba" >nul && set arcade=-mame -mame_img="s,m,t"
-echo %%i|findstr /lic:"fba_libretro" >nul && set arcade=-mame -mame_img="s,m,t"
-echo %%i|findstr /lic:"mame" >nul && set arcade=-mame -mame_img="s,m,t"
-echo %%i|findstr /lic:"neogeo" >nul && set arcade=-mame -mame_img="s,m,t"
+echo %%i | findstr /LIC:"arcade" >nul && set arcade=-mame %mameImg% %mameSrc%
+echo %%i | findstr /LIC:"fba" >nul && set arcade=-mame %mameImg% %mameSrc%
+echo %%i | findstr /LIC:"mame" >nul && set arcade=-mame %mameImg% %mameSrc%
+echo %%i | findstr /LIC:"neogeo" >nul && set arcade=-mame %mameImg% %mameSrc%
 
-rem Change flags if NeoGeo in non-mame mode was selected
-rem Comma separated order to prefer images, s=snapshot, b=boxart, f=fanart, a=banner, l=logo, 3b=3D boxart. (default "b")
-echo %%i|findstr /lic:"neogeo" >nul && if "%nonmameMode%"=="y" set arcade=-console_img="b,s"
-
-if "%arcade%"=="" (
-set imageMode=%consoleIMG%
-) else (
-set "imageMode="
-)
+rem If mame device, consoleImg not used
+if not "!arcade!"=="" set "consoleImg="
 
 echo.
-title Scraping %%i...
+title fastscraper ver. %releaseDate% - Scraping %%i...
 
 rem Scraping roms
 echo Scraping %%i in progress. Please wait...
 echo.
-scraper.exe %appendMode% %arcade% -rom_dir="!romsDir!\%%i" %imagePath% -image_dir="!romsDir!\%%i\%imagePath:~15,-1%" %imageSuffix% -output_file="!romsDir!\%%i\gamelist.xml" -missing="!romsDir!\%%i\_%%i_missing.txt" %addNotFound% %imageMode% %extraExt% %imgFormat% %langSS% %noThumb% %refreshXML% %regionSS% %maxWidth% %useGDB% %useNoIntroName% %useOVGDB% %useSS% %workersN%
+scraper.exe %appendMode% !arcade! -rom_dir="!romsDir!\%%i" %imagePath% -image_dir="!romsDir!\%%i\%imagePath:~15,-1%" %imageSuffix% -output_file="!romsDir!\%%i\gamelist.xml" -missing="!romsDir!\%%i\_%%i_missing.txt" %addNotFound% !consoleImg! %consoleSrc% %downloadImg% %extraExt% %imgFormat% %langSS% %maxHeight% %maxWidth% %noThumb% %refreshXML% %regionSS% %username% %password% %useFilename% %useNoIntroName% %workersN%
 echo.
 )
 
@@ -193,11 +186,11 @@ echo Opening Folder Browser...
 
 rem PowerShell-Subroutine to open a Folder Browser
 set "psCommand="(new-object -COM 'Shell.Application')^
-.BrowseForFolder(0,'Please choose a folder.',0,0).self.path""
-for /f "usebackq delims=" %%i in (`powershell %psCommand%`) do set "newRoot=%%i"
+.BrowseForFolder(0,'Please choose the roms folder.',0,0).self.path""
+for /F "usebackq delims=" %%i in (`powershell %psCommand%`) do set "newRoot=%%i"
 
 set "romsDir=%newRoot%"
 cls & echo Selected roms folder: %romsDir%
 rem Check if scraping from network drive and show warning about stopping ES
-if not x%romsDir:\\=%==x%newRoot% echo Don't forget to stop EmulationStation before scraping!
+if not x%romsDir:\\=%==x%romsDir% echo Don't forget to stop EmulationStation before scraping!
 echo. & goto systemSelection
