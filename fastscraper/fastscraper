@@ -1,0 +1,186 @@
+#!/usr/bin/env bash
+# setterm -term linux -background cyan -foreground white -bold on & clear
+releaseDate=10.01.2017
+echo "fastscraper ver. $releaseDate"
+
+# Set ScreenScraper credentials
+username=""
+password=""
+
+# Flags - Static parameters
+	# If true, add roms that are not found as an empty gamelist entry.
+		addNotFound=-add_not_found=false
+
+	# Comma separated order to prefer images, s=snapshot, b=boxart, f=fanart, a=banner, l=logo, 3b=3D boxart. (default "b")
+		consoleImg=-console_img="b,s"
+
+	# Comma seperated order to prefer console sources, ss=screenscraper, ovgdb=OpenVGDB, gdb=theGamesDB (default "gdb")
+		consoleSrc=-console_src="ss"
+		
+	# If false, don't download any images, instead see if the expected file is stored locally already. (default true)
+		downloadImg=-download_images=true
+
+	# Comma separated list of extensions to also include in the scraper.
+		extraExt=-extra_ext=".scummvm,.ipf,.mx1,.mx2,.exe,.ws,.wsc,.wad"
+
+	# jpg or png, the format to write the images. (default "jpg")
+		imgFormat=-img_format="jpg"
+
+	# The path to use for images in gamelist.xml. (default "images")
+		imagePath=-image_path="./downloaded_images"
+
+	#  The suffix added after rom name when creating image files. (default "-image")
+		imageSuffix=-image_suffix="-image"
+		
+	# The order to choose for language if there is more than one for a value. (en, fr, es, de, pt) (default "en")
+		langSS=-lang="en,es,pt,de,fr"
+
+	# Comma separated order to prefer images, s=snap, t=title, m=marquee, c=cabniet. (default "t,m,s,c")
+	# Not documented yet: b=boxart, 3b=3D boxart (https://github.com/sselph/scraper/issues/126)
+		mameImg=-mame_img="b,s,m,t"
+		
+	# Comma seperated order to prefer mame sources, ss=screenscraper, mamedb=mamedb-mirror, gdb=theGamesDB-neogeo (default "mamedb,gdb")
+		mameSrc=-mame_src="ss"
+
+	# The max height of images. Larger images will be resized.
+		maxHeight=-max_height=0
+
+	# The max width of images. Larger images will be resized. (default 400)
+		maxWidth=-max_width=400
+
+	# Don't add thumbnails to the gamelist.
+		noThumb=-no_thumb=true
+
+	# Information will be attempted to be downloaded again but won't remove roms that are not scraped.
+		refreshXML=-refresh=false
+
+	# The order to choose for region if there is more than one for a value. (us, eu, jp, fr, xx) (default "us,eu,jp,fr,xx")
+		regionSS=-region="us,eu,jp,fr,xx"
+
+	# The `username` for registered ScreenScraper users.
+		username=-ss_user=$username
+
+	# The `password` for registered ScreenScraper users.
+		password=-ss_password=$password
+
+	# If true, use the filename minus the extension as the game title in xml.
+		useFilename=-use_filename=false
+
+    # Use the name in the No-Intro DB instead of the one in the GDB. (default true)
+		useNoIntroName=-use_nointro_name=true
+
+	# Use N worker threads to process roms. (default 1)
+		workersN=-workers=4
+
+# Set default roms directory to launch directory
+romsDir=`pwd`
+
+# scraperBIN 
+# Check if scraper is on root folder
+if [ ! -f "./scraper" ]; then
+	echo "scraper missing!"
+	while [ $? -eq 0 ]; do
+		read -p "Do you want to open the URL to download it? [Y/N]: " download
+		if [[ "$download" = "y" || "$download" = "Y" ]]; then xdg-open 'https://github.com/sselph/scraper/releases' & exit; fi
+		if [[ "$download" = "n" || "$download" = "N" ]]; then exit; fi
+		echo "Incorrect input!"
+	done
+fi
+
+# scraperVersion
+# Show scraper version
+chmod u+x ./scraper
+echo "scraper's version found:" & ./scraper -version		
+
+# systemSelection
+# Select the system to scrape (type "all" to scrape all folders)
+while true; do
+	echo "Which system(s) do you want to scrape? All? Type \"cd\" to open the folder browser."
+	read system
+	if [ "$system" = "" ]; then echo "Incorrect input!";
+	elif [ "$system" = "cd" ]; then echo "Folder Browser not implemented yet, sorry!";
+	elif [ ! "$system" = "all" ]; then break;
+	else
+		system=`find . -maxdepth 1 -type d ! -name '.*' -printf '%f\n'` && break
+	fi
+done
+
+# modeSelection
+# Choose to append an existing (y) or create a new gamelist (n)
+while true; do
+	if [ "$refreshXML" = "-refresh=true" ]; then appendMode="" && break; fi
+	read -p "Would you like to append existing gamelists? [Y/N]: " appendXML
+	if [[ "$appendXML" = "y" || "$appendXML" = "Y" ]]; then appendMode=-append && break; fi
+	if [[ "$appendXML" = "n" || "$appendXML" = "N" ]]; then appendMode="" && break; fi
+	echo "Incorrect input!"
+done
+
+# startTime
+# Save start time
+startTime=$(date +"%T")
+SECONDS=0
+
+# ******************** MAIN CODE SECTION
+
+for i in $system; do
+
+# Check if mame device is selected and set corresponding flags
+	arcade=""
+	if [[ "$i" == *"arcade"* ]]; then arcade="-mame $mameImg $mameSrc"; fi
+	if [[ "$i" == *"fba"* ]]; then arcade="-mame $mameImg $mameSrc"; fi
+	if [[ "$i" == *"mame"* ]]; then arcade="-mame $mameImg $mameSrc"; fi
+	if [[ "$i" == *"neogeo"* ]]; then arcade="-mame $mameImg $mameSrc"; fi
+
+# If mame device, consoleImg not used
+	if [ ! "$arcade" = "" ]; then consoleImg=""; fi
+
+	echo ""
+
+# Scraping roms
+	echo "Scraping $i in progress. Please wait..."
+	echo ""
+./scraper $appendMode $arcade -rom_dir="$romsDir/$i" $imagePath -image_dir="$romsDir/$i/${imagePath:14}" $imageSuffix -output_file="$romsDir/$i/gamelist.xml" -missing="$romsDir/$i/_${i}_missing.txt" $addNotFound $consoleImg $consoleSrc $downloadImg $extraExt $imgFormat $langSS $maxHeight $maxWidth $noThumb $refreshXML $regionSS $username $password $useFilename $useNoIntroName $workersN
+	echo ""
+done
+
+# ******************** END MAIN CODE SECTION
+
+# Save finish time
+endTime=$(date +"%T")
+DURATION=$SECONDS
+
+# Format the results for output
+hh=$(($DURATION / 3600)); mm=$((($DURATION / 60) % 60)); ss=$(($DURATION % 60))
+if [ $hh -lt 10 ]; then hh=0$hh; fi
+if [ $mm -lt 10 ]; then mm=0$mm; fi
+if [ $ss -lt 10 ]; then ss=0$ss; fi
+
+DURATION=$hh:$mm:$ss
+
+echo "Start    : $startTime"
+echo "Finish   : $endTime"
+echo "         ------------"
+echo "Duration : $DURATION"
+
+echo ""	
+exit 0
+
+# On Linux maybe possible:
+zenity --file-selection --directory --title="Please choose the roms folder."
+echo "You selected $(zenity --file-selection)"
+
+# Old PowerShell-Subroutine just for reference until I implement a folder browser on bash
+# SUB_folderBrowser
+echo ""
+echo "Opening Folder Browser..."
+
+# PowerShell-Subroutine to open a Folder Browser
+set "psCommand="(new-object -COM 'Shell.Application')^
+.BrowseForFolder(0,'Please choose the roms folder.',0,0).self.path""
+for /F "usebackq delims=" %%i in (`powershell %psCommand%`) do set "newRoot=%%i"
+
+set "romsDir=%newRoot%"
+cls & echo Selected roms folder: %romsDir%
+# Check if scraping from network drive and show warning about stopping ES
+if not x%romsDir:\\=%==x%romsDir% echo Don't forget to stop EmulationStation before scraping!
+echo. & goto systemSelection
