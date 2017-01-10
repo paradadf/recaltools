@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# setterm -term linux -background cyan -foreground white -bold on & clear
-releaseDate=10.01.2017
+releaseDate=11.01.2017
 echo "fastscraper ver. $releaseDate"
 
 # Set ScreenScraper credentials
@@ -66,7 +65,7 @@ password=""
 	# If true, use the filename minus the extension as the game title in xml.
 		useFilename=-use_filename=false
 
-    # Use the name in the No-Intro DB instead of the one in the GDB. (default true)
+	# Use the name in the No-Intro DB instead of the one in the GDB. (default true)
 		useNoIntroName=-use_nointro_name=true
 
 	# Use N worker threads to process roms. (default 1)
@@ -92,13 +91,29 @@ fi
 chmod u+x ./scraper
 echo "scraper's version found:" & ./scraper -version		
 
+# Function to open a folder browser depending on the OS
+folder_browser()
+{
+	echo ""
+	echo "Opening Folder Browser..."
+	case "$OSTYPE" in
+		darwin*) echo "Folder Browser for macOS not implemented yet, sorry!" ;;
+		linux*) romsDir=`zenity --file-selection --directory --title="Please choose the roms folder."` ;;
+	esac
+
+# Check if scraping from network drive and show warning about stopping ES
+	clear && echo "Selected roms folder: $romsDir"
+	if [[ "$romsDir" == "//"* ]]; then echo "Don't forget to stop EmulationStation before scraping!"; fi
+	echo ""
+}
+
 # systemSelection
 # Select the system to scrape (type "all" to scrape all folders)
 while true; do
 	echo "Which system(s) do you want to scrape? All? Type \"cd\" to open the folder browser."
 	read system
 	if [ "$system" = "" ]; then echo "Incorrect input!";
-	elif [ "$system" = "cd" ]; then echo "Folder Browser not implemented yet, sorry!";
+	elif [ "$system" = "cd" ]; then folder_browser;
 	elif [ ! "$system" = "all" ]; then break;
 	else
 		system=`find . -maxdepth 1 -type d ! -name '.*' -printf '%f\n'` && break
@@ -164,23 +179,3 @@ echo "Duration : $DURATION"
 
 echo ""	
 exit 0
-
-# On Linux maybe possible:
-zenity --file-selection --directory --title="Please choose the roms folder."
-echo "You selected $(zenity --file-selection)"
-
-# Old PowerShell-Subroutine just for reference until I implement a folder browser on bash
-# SUB_folderBrowser
-echo ""
-echo "Opening Folder Browser..."
-
-# PowerShell-Subroutine to open a Folder Browser
-set "psCommand="(new-object -COM 'Shell.Application')^
-.BrowseForFolder(0,'Please choose the roms folder.',0,0).self.path""
-for /F "usebackq delims=" %%i in (`powershell %psCommand%`) do set "newRoot=%%i"
-
-set "romsDir=%newRoot%"
-cls & echo Selected roms folder: %romsDir%
-# Check if scraping from network drive and show warning about stopping ES
-if not x%romsDir:\\=%==x%romsDir% echo Don't forget to stop EmulationStation before scraping!
-echo. & goto systemSelection
