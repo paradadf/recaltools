@@ -103,7 +103,7 @@ folder_browser()
 
 # Check if scraping from network drive and show warning about stopping ES
 	clear && echo "Selected roms folder: $romsDir"
-	if [[ "$romsDir" == "//"* ]]; then echo "Don't forget to stop EmulationStation before scraping!"; fi
+	if [[ `df $romsDir | grep '^//'` == "//"* ]]; then echo "Don't forget to stop EmulationStation before scraping!"; fi
 	echo ""
 }
 
