@@ -1,6 +1,6 @@
 @echo off
 color 3f
-set releaseDate=08.01.2017
+set releaseDate=11.01.2017
 title fastscraper ver. %releaseDate%
 
 rem Set ScreenScraper credentials
@@ -97,7 +97,7 @@ if "%system%"=="cd" goto SUB_folderBrowser
 if "%system%"=="" echo Incorrect input^^! & goto systemSelection
 if /I not "%system%"=="all" goto modeSelection
 	set "system="
-	for /F "delims=" %%f in ('dir /B /A:D') do set system=!system! %%f
+	for /F "delims=" %%f in ('dir /B /A:D "%romsDir%"') do set system=!system! %%f
 
 :modeSelection
 rem Choose to append an existing (y) or create a new gamelist (n)
@@ -122,23 +122,24 @@ rem ******************** MAIN CODE SECTION
 for %%i in (%system%) do (
 
 rem Check if mame device is selected and set corresponding flags
-set "arcade="
-echo %%i | findstr /LIC:"arcade" >nul && set arcade=-mame %mameImg% %mameSrc%
-echo %%i | findstr /LIC:"fba" >nul && set arcade=-mame %mameImg% %mameSrc%
-echo %%i | findstr /LIC:"mame" >nul && set arcade=-mame %mameImg% %mameSrc%
-echo %%i | findstr /LIC:"neogeo" >nul && set arcade=-mame %mameImg% %mameSrc%
+	set "arcade="
+	echo %%i | findstr /LIC:"arcade" >nul && set arcade=-mame %mameImg% %mameSrc%
+	echo %%i | findstr /LIC:"fba" >nul && set arcade=-mame %mameImg% %mameSrc%
+	echo %%i | findstr /LIC:"mame" >nul && set arcade=-mame %mameImg% %mameSrc%
+	echo %%i | findstr /LIC:"neogeo" >nul && set arcade=-mame %mameImg% %mameSrc%
 
 rem If mame device, consoleImg not used
-if not "!arcade!"=="" set "consoleImg="
+	if not "!arcade!"=="" set "consoleImg="
 
-echo.
-title fastscraper ver. %releaseDate% - Scraping %%i...
+	echo.
+	title fastscraper ver. %releaseDate% - Scraping %%i...
 
 rem Scraping roms
-echo Scraping %%i in progress. Please wait...
-echo.
+	echo Scraping %%i in progress. Please wait...
+	echo.
 scraper.exe %appendMode% !arcade! -rom_dir="!romsDir!\%%i" %imagePath% -image_dir="!romsDir!\%%i\%imagePath:~15,-1%" %imageSuffix% -output_file="!romsDir!\%%i\gamelist.xml" -missing="!romsDir!\%%i\_%%i_missing.txt" %addNotFound% !consoleImg! %consoleSrc% %downloadImg% %extraExt% %imgFormat% %langSS% %maxHeight% %maxWidth% %noThumb% %refreshXML% %regionSS% %username% %password% %useFilename% %useNoIntroName% %workersN%
-echo.
+	echo.
+	
 )
 
 rem ******************** END MAIN CODE SECTION
