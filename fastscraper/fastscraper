@@ -101,9 +101,6 @@ folder_browser()
 		linux*) romsDir=`zenity --file-selection --directory --title="Please choose the roms folder."` ;;
 	esac
 
-# Change working directory
-	cd "$romsDir"
-
 # Check if scraping from network drive and show warning about stopping ES
 	clear && echo "Selected roms folder: $romsDir"
 	if [[ "$romsDir" == "//"* ]]; then echo "Don't forget to stop EmulationStation before scraping!"; fi
