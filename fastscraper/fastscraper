@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-releaseDate=11.01.2017
+releaseDate=13.01.2017
 echo "fastscraper ver. $releaseDate"
 
 # Set ScreenScraper credentials
@@ -80,7 +80,10 @@ if [ ! -f "./scraper" ]; then
 	echo "scraper missing!"
 	while [ $? -eq 0 ]; do
 		read -p "Do you want to open the URL to download it? [Y/N]: " download
-		if [[ "$download" = "y" || "$download" = "Y" ]]; then xdg-open 'https://github.com/sselph/scraper/releases' & exit; fi
+		case "$OSTYPE" in
+			darwin*) if [[ "$download" = "y" || "$download" = "Y" ]]; then open 'https://github.com/sselph/scraper/releases' & exit; fi ;;
+			linux*) if [[ "$download" = "y" || "$download" = "Y" ]]; then xdg-open 'https://github.com/sselph/scraper/releases' & exit; fi ;;
+		esac
 		if [[ "$download" = "n" || "$download" = "N" ]]; then exit; fi
 		echo "Incorrect input!"
 	done
