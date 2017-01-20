@@ -72,6 +72,7 @@ password=""
 
 # Set default roms directory to launch directory
 romsDir=`pwd`
+scriptPath=`pwd`
 
 # scraperBIN 
 # Check if scraper is on root folder
@@ -104,8 +105,8 @@ folder_browser()
 	esac
 
 # Check if scraping from network drive and show warning about stopping ES
-	cd $romsDir && clear && echo "Selected roms folder: $romsDir"
-	if [[ `df $romsDir | grep '^//'` == "//"* ]]; then echo "Don't forget to stop EmulationStation before scraping!"; fi
+	cd "$romsDir" && clear && echo "Selected roms folder: $romsDir"
+	if [[ `df "$romsDir" | grep '^//'` == "//"* ]]; then echo "Don't forget to stop EmulationStation before scraping!"; fi
 	echo ""
 }
 
@@ -156,7 +157,7 @@ for i in $system; do
 # Scraping roms
 	echo "Scraping $i in progress. Please wait..."
 	echo ""
-"$(cd "$(dirname "$1")"; pwd -P)"/scraper $appendMode $arcade -rom_dir="$i" $imagePath -image_dir="$i/${imagePath:14}" $imageSuffix -output_file="$i/gamelist.xml" -missing="$i/_${i}_missing.txt" $addNotFound $consoleImg $consoleSrc $downloadImg $extraExt $imgFormat $langSS $maxHeight $maxWidth $noThumb $refreshXML $regionSS $username $password $useFilename $useNoIntroName $workersN
+"$scriptPath/scraper" $appendMode $arcade -rom_dir="$i" $imagePath -image_dir="$i/${imagePath:14}" $imageSuffix -output_file="$i/gamelist.xml" -missing="$i/_${i}_missing.txt" $addNotFound $consoleImg $consoleSrc $downloadImg $extraExt $imgFormat $langSS $maxHeight $maxWidth $noThumb $refreshXML $regionSS $username $password $useFilename $useNoIntroName $workersN
 	echo ""
 done
 
