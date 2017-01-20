@@ -1,6 +1,6 @@
 @echo off
 color 3f
-set releaseDate=11.01.2017
+set releaseDate=20.01.2017
 title fastscraper ver. %releaseDate%
 
 rem Set ScreenScraper credentials
@@ -35,9 +35,8 @@ rem Flags - Static parameters
 	rem The order to choose for language if there is more than one for a value. (en, fr, es, de, pt) (default "en")
 		set langSS=-lang="en,es,pt,de,fr"
 
-	rem Comma separated order to prefer images, s=snap, t=title, m=marquee, c=cabniet. (default "t,m,s,c")
-	rem Not documented yet: b=boxart, 3b=3D boxart (https://github.com/sselph/scraper/issues/126)
-		set mameImg=-mame_img="b,s,m,t"
+	rem Comma separated order to prefer images, s=snap, t=title, m=marquee, c=cabniet, b=boxart, 3b=3D-boxart, fly=flyer. (default "t,m,s,c")
+		set mameImg=-mame_img="b,s,fly,m,t"
 		
 	rem Comma seperated order to prefer mame sources, ss=screenscraper, mamedb=mamedb-mirror, gdb=theGamesDB-neogeo (default "mamedb,gdb")
 		set mameSrc=-mame_src="ss"
@@ -54,8 +53,8 @@ rem Flags - Static parameters
 	rem Information will be attempted to be downloaded again but won't remove roms that are not scraped.
 		set refreshXML=-refresh=false
 
-	rem The order to choose for region if there is more than one for a value. (us, eu, jp, fr, xx) (default "us,eu,jp,fr,xx")
-		set regionSS=-region="us,eu,jp,fr,xx"
+	rem The order to choose for region if there is more than one for a value. (us,wor,eu,jp,fr,xx) (default "us,wor,eu,jp,fr,xx")
+		set regionSS=-region="us,wor,eu,jp,fr,xx"
 
 	rem The `username` for registered ScreenScraper users.
 		set username=-ss_user=%username%
@@ -66,7 +65,7 @@ rem Flags - Static parameters
 	rem If true, use the filename minus the extension as the game title in xml.
 		set useFilename=-use_filename=false
 
-    	rem Use the name in the No-Intro DB instead of the one in the GDB. (default true)
+	rem Use the name in the No-Intro DB instead of the one in the GDB. (default true)
 		set useNoIntroName=-use_nointro_name=true
 
 	rem Use N worker threads to process roms. (default 1)
@@ -97,7 +96,7 @@ if "%system%"=="cd" goto SUB_folderBrowser
 if "%system%"=="" echo Incorrect input^^! & goto systemSelection
 if /I not "%system%"=="all" goto modeSelection
 	set "system="
-	for /F "delims=" %%f in ('dir /B /A:D "%romsDir%"') do set system=!system! %%f
+	for /F "delims=" %%f in ('dir /B /A:D') do set system=!system! %%f
 
 :modeSelection
 rem Choose to append an existing (y) or create a new gamelist (n)
@@ -137,7 +136,7 @@ rem If mame device, consoleImg not used
 rem Scraping roms
 	echo Scraping %%i in progress. Please wait...
 	echo.
-scraper.exe %appendMode% !arcade! -rom_dir="!romsDir!\%%i" %imagePath% -image_dir="!romsDir!\%%i\%imagePath:~15,-1%" %imageSuffix% -output_file="!romsDir!\%%i\gamelist.xml" -missing="!romsDir!\%%i\_%%i_missing.txt" %addNotFound% !consoleImg! %consoleSrc% %downloadImg% %extraExt% %imgFormat% %langSS% %maxHeight% %maxWidth% %noThumb% %refreshXML% %regionSS% %username% %password% %useFilename% %useNoIntroName% %workersN%
+"%~dp0scraper.exe" %appendMode% !arcade! -rom_dir="%%i" %imagePath% -image_dir="%%i\%imagePath:~15,-1%" %imageSuffix% -output_file="%%i\gamelist.xml" -missing="%%i\_%%i_missing.txt" %addNotFound% !consoleImg! %consoleSrc% %downloadImg% %extraExt% %imgFormat% %langSS% %maxHeight% %maxWidth% %noThumb% %refreshXML% %regionSS% %username% %password% %useFilename% %useNoIntroName% %workersN%
 	echo.
 	
 )
@@ -191,7 +190,7 @@ set "psCommand="(new-object -COM 'Shell.Application')^
 for /F "usebackq delims=" %%i in (`powershell %psCommand%`) do set "newRoot=%%i"
 
 set "romsDir=%newRoot%"
-cls & echo Selected roms folder: %romsDir%
+cd "%romsDir%" & cls & echo Selected roms folder: %romsDir%
 rem Check if scraping from network drive and show warning about stopping ES
 if not x%romsDir:\\=%==x%romsDir% echo Don't forget to stop EmulationStation before scraping!
 echo. & goto systemSelection
