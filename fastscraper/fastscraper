@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-releaseDate=13.01.2017
+releaseDate=20.01.2017
 echo "fastscraper ver. $releaseDate"
 
 # Set ScreenScraper credentials
@@ -34,9 +34,8 @@ password=""
 	# The order to choose for language if there is more than one for a value. (en, fr, es, de, pt) (default "en")
 		langSS=-lang="en,es,pt,de,fr"
 
-	# Comma separated order to prefer images, s=snap, t=title, m=marquee, c=cabniet. (default "t,m,s,c")
-	# Not documented yet: b=boxart, 3b=3D boxart (https://github.com/sselph/scraper/issues/126)
-		mameImg=-mame_img="b,s,m,t"
+	# Comma separated order to prefer images, s=snap, t=title, m=marquee, c=cabniet, b=boxart, 3b=3D-boxart, fly=flyer. (default "t,m,s,c")
+		mameImg=-mame_img="b,s,fly,m,t"
 		
 	# Comma seperated order to prefer mame sources, ss=screenscraper, mamedb=mamedb-mirror, gdb=theGamesDB-neogeo (default "mamedb,gdb")
 		mameSrc=-mame_src="ss"
@@ -53,8 +52,8 @@ password=""
 	# Information will be attempted to be downloaded again but won't remove roms that are not scraped.
 		refreshXML=-refresh=false
 
-	# The order to choose for region if there is more than one for a value. (us, eu, jp, fr, xx) (default "us,eu,jp,fr,xx")
-		regionSS=-region="us,eu,jp,fr,xx"
+	# The order to choose for region if there is more than one for a value. (us,wor,eu,jp,fr,xx) (default "us,wor,eu,jp,fr,xx")
+		regionSS=-region="us,wor,eu,jp,fr,xx"
 
 	# The `username` for registered ScreenScraper users.
 		username=-ss_user=$username
@@ -105,7 +104,7 @@ folder_browser()
 	esac
 
 # Check if scraping from network drive and show warning about stopping ES
-	clear && echo "Selected roms folder: $romsDir"
+	cd $romsDir && clear && echo "Selected roms folder: $romsDir"
 	if [[ `df $romsDir | grep '^//'` == "//"* ]]; then echo "Don't forget to stop EmulationStation before scraping!"; fi
 	echo ""
 }
@@ -119,7 +118,7 @@ while true; do
 	elif [ "$system" = "cd" ]; then folder_browser;
 	elif [ ! "$system" = "all" ]; then break;
 	else
-		system=`find $romsDir -mindepth 1 -maxdepth 1 -type d -printf '%f\n'` && break
+		system=`find . -mindepth 1 -maxdepth 1 -type d -printf '%f\n'` && break
 	fi
 done
 
@@ -157,7 +156,7 @@ for i in $system; do
 # Scraping roms
 	echo "Scraping $i in progress. Please wait..."
 	echo ""
-./scraper $appendMode $arcade -rom_dir="$romsDir/$i" $imagePath -image_dir="$romsDir/$i/${imagePath:14}" $imageSuffix -output_file="$romsDir/$i/gamelist.xml" -missing="$romsDir/$i/_${i}_missing.txt" $addNotFound $consoleImg $consoleSrc $downloadImg $extraExt $imgFormat $langSS $maxHeight $maxWidth $noThumb $refreshXML $regionSS $username $password $useFilename $useNoIntroName $workersN
+"$(cd "$(dirname "$1")"; pwd -P)"/scraper $appendMode $arcade -rom_dir="$i" $imagePath -image_dir="$i/${imagePath:14}" $imageSuffix -output_file="$i/gamelist.xml" -missing="$i/_${i}_missing.txt" $addNotFound $consoleImg $consoleSrc $downloadImg $extraExt $imgFormat $langSS $maxHeight $maxWidth $noThumb $refreshXML $regionSS $username $password $useFilename $useNoIntroName $workersN
 	echo ""
 done
 
