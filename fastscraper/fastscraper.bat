@@ -1,6 +1,6 @@
 @echo off
 color 3f
-set releaseDate=20.01.2017
+set releaseDate=26.01.2017
 title fastscraper ver. %releaseDate%
 
 rem Set ScreenScraper credentials
@@ -53,7 +53,7 @@ rem Flags - Static parameters
 	rem Information will be attempted to be downloaded again but won't remove roms that are not scraped.
 		set refreshXML=-refresh=false
 
-	rem The order to choose for region if there is more than one for a value. (us,wor,eu,jp,fr,xx) (default "us,wor,eu,jp,fr,xx")
+	rem The order to choose for region if there is more than one for a value. xx is a special region that will choose any region. (default "us,wor,eu,jp,fr,xx")
 		set regionSS=-region="us,wor,eu,jp,fr,xx"
 
 	rem The `username` for registered ScreenScraper users.
