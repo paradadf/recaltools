@@ -4,6 +4,8 @@ Place fastscraper and scraper on your root rom's directory.
 Windows users need fastscraper.bat  
 Linux and macOS users need to set appropriate permissions: `chmod u+x ./fastscraper`
 
+**Don't forget to set your [ScreenScraper](http://screenscraper.fr/) *username* and *password* to scrape faster!!!**
+
 I used the following commands to mount recalbox's share partition and scrape over the network. Scraping directly from the Pi is very slow! (Tested on Ubuntu)
 
 * First prepare the mount point (unless it already exists):  
