@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-releaseDate=20.01.2017
+releaseDate=26.01.2017
 echo "fastscraper ver. $releaseDate"
 
 # Set ScreenScraper credentials
@@ -52,7 +52,7 @@ password=""
 	# Information will be attempted to be downloaded again but won't remove roms that are not scraped.
 		refreshXML=-refresh=false
 
-	# The order to choose for region if there is more than one for a value. (us,wor,eu,jp,fr,xx) (default "us,wor,eu,jp,fr,xx")
+	# The order to choose for region if there is more than one for a value. xx is a special region that will choose any region. (default "us,wor,eu,jp,fr,xx")
 		regionSS=-region="us,wor,eu,jp,fr,xx"
 
 	# The `username` for registered ScreenScraper users.
