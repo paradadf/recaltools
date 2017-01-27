@@ -1,8 +1,8 @@
 Script to facilitate the use of [sselph's scraper](https://github.com/sselph/scraper/releases).
 
-Place fastscraper and scraper on your root rom's directory.  
+Place fastscraper[.bat] on your rom's root directory. The script will automatically download/update the scraper if needed.  
 Windows users need fastscraper.bat  
-Linux and macOS users need to set appropriate permissions: `chmod u+x ./fastscraper`
+Linux, macOS or FreeBSD users need to set appropriate permissions: `chmod u+x ./fastscraper`
 
 **Don't forget to set your [ScreenScraper](http://screenscraper.fr/) *username* and *password* to scrape faster!!!**
 
