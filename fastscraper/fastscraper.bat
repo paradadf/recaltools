@@ -1,6 +1,6 @@
 @echo off
 color 3f
-set releaseDate=26.01.2017
+set releaseDate=27.01.2017
 title fastscraper ver. %releaseDate%
 
 rem Set ScreenScraper credentials
@@ -75,17 +75,33 @@ rem Set default roms directory to launch directory
 set "romsDir=%cd%"	
 
 :scraperEXE
-rem Check if scraper.exe is on root folder
-if exist scraper.exe goto scraperVersion
-echo scraper.exe missing
-set /P "download=Do you want to open the URL to download it? [Y/N]: "
-if /I "%download%"=="y" start https://github.com/sselph/scraper/releases & goto:eof
-if /I "%download%"=="n" goto:eof
-echo Incorrect input! & goto scraperEXE
+rem Detect OS architecture
+reg Query "HKLM\Hardware\Description\System\CentralProcessor\0" | find /I "x86" >nul && set arch=386 || set arch=amd64
 
-:scraperVersion
-rem Show scraper version
-echo scraper.exe's version found: & scraper.exe -version		
+rem Query the API to get the latest tag
+set "Uri=https://api.github.com/repos/sselph/scraper/releases/latest"
+for /F "delims=" %%a in ('PowerShell Invoke-RestMethod -Method Get -Uri %Uri% ^| find /I "tag_name"') do (
+	for /F "tokens=3" %%b in ("%%a") do set scraperVersion=%%b
+)
+
+rem Download or update scraper if needed
+if exist "scraper.exe" (
+	for /F "tokens=* usebackq" %%a in (`scraper.exe -version`) do (
+		if "%%a"=="%scraperVersion%" goto systemSelection
+		echo Updating sselph scraper from %%a to %scraperVersion%, please wait... & echo.
+	)
+) else echo Downloading sselph scraper, please wait... & echo.
+
+rem Build the file name, download url and download the file to the current location
+set scraperZip=scraper_windows_%arch%.zip
+set scraperURL=https://github.com/sselph/scraper/releases/download/%scraperVersion%/%scraperZip%
+PowerShell (New-Object System.Net.WebClient).DownloadFile('%scraperURL%', '%~dp0%scraperZip%')
+
+rem Unzip the scraper and remove unnecessary files
+if exist "%scraperZip%" (
+	PowerShell Expand-Archive -Path '%scraperZip%' -DestinationPath '.\' -Force
+	del %scraperZip% LICENSE.txt	
+) else echo ERROR: Unable to download the scraper. Exiting... & pause >nul & exit
 	
 :systemSelection
 rem Select the system to scrape (type "all" to scrape all folders)
@@ -185,9 +201,9 @@ echo.
 echo Opening Folder Browser...
 
 rem PowerShell-Subroutine to open a Folder Browser
-set "psCommand="(new-object -COM 'Shell.Application')^
+set "psCommand="(New-Object -COM Shell.Application)^
 .BrowseForFolder(0,'Please choose the roms folder.',0,0).self.path""
-for /F "usebackq delims=" %%i in (`powershell %psCommand%`) do set "newRoot=%%i"
+for /F "usebackq delims=" %%i in (`PowerShell %psCommand%`) do set "newRoot=%%i"
 
 set "romsDir=%newRoot%"
 cd "%romsDir%" & cls & echo Selected roms folder: %romsDir%
