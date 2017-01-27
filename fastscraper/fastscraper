@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-releaseDate=27.01.2017
+releaseDate=28.01.2017
 echo "fastscraper ver. $releaseDate"
 
 # Set ScreenScraper credentials
@@ -48,6 +48,9 @@ password=""
 
 	# Don't add thumbnails to the gamelist.
 		noThumb=-no_thumb=true
+		
+	# Download the thumbnail for both the image and thumb (faster). (default "false")
+		thumbOnly=-thumb_only=false
 
 	# Information will be attempted to be downloaded again but won't remove roms that are not scraped.
 		refreshXML=-refresh=false
@@ -78,7 +81,12 @@ scriptPath=`pwd`
 download_scraper()
 {
 # Detect OS architecture
-	if [ `uname -m` == "x86_64" ]; then arch=amd64;
+	if [ `uname -m` == "armv7l" ]; then arch=rpi2;
+	elif [ `uname -m` == "armv6l" ]; then 
+		arch=rpi
+		thumbOnly=-thumb_only=true
+		workersN=-workers=1
+	elif [ `uname -m` == "x86_64" ]; then arch=amd64;
 	else arch=386; fi
 
 # Detect OS platform
@@ -94,7 +102,11 @@ download_scraper()
 	fi
 
 # Build the file name, download url and download the file to the current location
-	scraperZip=scraper_${platform}_${arch}.zip
+	if [[ $arch = "rpi2" || $arch = "rpi" ]]; then
+		scraperZip=scraper_${arch}.zip
+	else
+		scraperZip=scraper_${platform}_${arch}.zip
+	fi
 	scraperURL=https://github.com/sselph/scraper/releases/download/${scraperVersion}/${scraperZip}
 	wget -q $scraperURL || { echo "ERROR: Unable to download the scraper. Exiting..."; exit 1; }
 
@@ -186,7 +198,7 @@ for i in $system; do
 # Scraping roms
 	echo "Scraping $i in progress. Please wait..."
 	echo ""
-"$scriptPath/scraper" $appendMode $arcade -rom_dir="$i" $imagePath -image_dir="$i/${imagePath:14}" $imageSuffix -output_file="$i/gamelist.xml" -missing="$i/_${i}_missing.txt" $addNotFound $consoleImg $consoleSrc $downloadImg $extraExt $imgFormat $langSS $maxHeight $maxWidth $noThumb $refreshXML $regionSS $username $password $useFilename $useNoIntroName $workersN
+"$scriptPath/scraper" $appendMode $arcade -rom_dir="$i" $imagePath -image_dir="$i/${imagePath:14}" $imageSuffix -output_file="$i/gamelist.xml" -missing="$i/_${i}_missing.txt" $addNotFound $consoleImg $consoleSrc $downloadImg $extraExt $imgFormat $langSS $maxHeight $maxWidth $noThumb $thumbOnly $refreshXML $regionSS $username $password $useFilename $useNoIntroName $workersN
 	echo ""
 done
 
