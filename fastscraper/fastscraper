@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-releaseDate=26.01.2017
+releaseDate=27.01.2017
 echo "fastscraper ver. $releaseDate"
 
 # Set ScreenScraper credentials
@@ -74,25 +74,53 @@ password=""
 romsDir=`pwd`
 scriptPath=`pwd`
 
-# scraperBIN 
-# Check if scraper is on root folder
-if [ ! -f "./scraper" ]; then
-	echo "scraper missing!"
-	while [ $? -eq 0 ]; do
-		read -p "Do you want to open the URL to download it? [Y/N]: " download
-		case "$OSTYPE" in
-			darwin*) if [[ "$download" = "y" || "$download" = "Y" ]]; then open 'https://github.com/sselph/scraper/releases' & exit; fi ;;
-			linux*) if [[ "$download" = "y" || "$download" = "Y" ]]; then xdg-open 'https://github.com/sselph/scraper/releases' & exit; fi ;;
-		esac
-		if [[ "$download" = "n" || "$download" = "N" ]]; then exit; fi
-		echo "Incorrect input!"
-	done
-fi
+# Function to download the latest scraper version
+download_scraper()
+{
+# Detect OS architecture
+	if [ `uname -m` == "x86_64" ]; then arch=amd64;
+	else arch=386; fi
 
-# scraperVersion
-# Show scraper version
-chmod u+x ./scraper
-echo "scraper's version found:" & ./scraper -version		
+# Detect OS platform
+	if [[ $(uname) == 'Linux' ]]; then
+		platform='linux'
+	elif [[ $(uname) == 'Darwin' ]]; then
+		platform='mac'
+	elif [[ $(uname) == 'FreeBSD' ]]; then
+		platform='freebsd'
+	else
+		echo "$(uname) is not a supported platform"
+		exit 1
+	fi
+
+# Build the file name, download url and download the file to the current location
+	scraperZip=scraper_${platform}_${arch}.zip
+	scraperURL=https://github.com/sselph/scraper/releases/download/${scraperVersion}/${scraperZip}
+	wget -q $scraperURL || { echo "ERROR: Unable to download the scraper. Exiting..."; exit 1; }
+
+# Unzip the scraper, remove unnecessary files and set appropriate permissions
+	unzip -o -q $scraperZip scraper || { echo "ERROR: Couldn't unzip the scraper. Exiting..."; exit 1; }
+	rm $scraperZip
+	chmod u+x ./scraper
+	echo ""
+}
+
+# scraperBIN
+# Query the API to get the latest release tag
+scraperVersion=$(wget -qO - https://api.github.com/repos/sselph/scraper/releases/latest | grep tag_name | cut -d '"' -f 4)
+
+# Download or update scraper if needed
+if [ -f "./scraper" ]; then
+	chmod u+x ./scraper
+	if [ "$scraperVersion" = "$(./scraper -version)" ]; then :;
+	else
+		echo "Updating sselph scraper from $(./scraper -version) to $scraperVersion, please wait..."
+		download_scraper
+	fi
+else
+	echo "Downloading sselph scraper, please wait..."
+	download_scraper
+fi
 
 # Function to open a folder browser depending on the OS
 folder_browser()
@@ -101,6 +129,7 @@ folder_browser()
 	echo "Opening Folder Browser..."
 	case "$OSTYPE" in
 		darwin*) echo "Folder Browser for macOS not implemented yet, sorry!" ;;
+		freebsd*) echo "Folder Browser for FreeBSD not implemented yet, sorry!" ;;
 		linux*) romsDir=`zenity --file-selection --directory --title="Please choose the roms folder."` ;;
 	esac
 
