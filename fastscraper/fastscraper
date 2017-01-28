@@ -160,7 +160,7 @@ while true; do
 	elif [ "$system" = "cd" ]; then folder_browser;
 	elif [ ! "$system" = "all" ]; then break;
 	else
-		system=`find . -mindepth 1 -maxdepth 1 -type d -printf '%f\n'` && break
+		system=$(find * -prune -type d | while read d; do echo "$d"; done) && break
 	fi
 done
 
