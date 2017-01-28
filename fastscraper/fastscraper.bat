@@ -1,6 +1,6 @@
 @echo off
 color 3f
-set releaseDate=27.01.2017
+set releaseDate=29.01.2017
 title fastscraper ver. %releaseDate%
 
 rem Set ScreenScraper credentials
@@ -49,6 +49,9 @@ rem Flags - Static parameters
 
 	rem Don't add thumbnails to the gamelist.
 		set noThumb=-no_thumb=true
+		
+	rem Download the thumbnail for both the image and thumb (faster). (default "false")
+		set thumbOnly=-thumb_only=false
 
 	rem Information will be attempted to be downloaded again but won't remove roms that are not scraped.
 		set refreshXML=-refresh=false
@@ -74,6 +77,10 @@ rem Flags - Static parameters
 rem Set default roms directory to launch directory
 set "romsDir=%cd%"	
 
+rem Check internet connection
+ping 8.8.8.8 -n 1 -w 1000 >nul
+if errorlevel 1 echo ERROR: No internet connection available. Exiting... & pause >nul & exit
+
 :scraperEXE
 rem Detect OS architecture
 reg Query "HKLM\Hardware\Description\System\CentralProcessor\0" | find /I "x86" >nul && set arch=386 || set arch=amd64
@@ -88,6 +95,7 @@ rem Download or update scraper if needed
 if exist "scraper.exe" (
 	for /F "tokens=* usebackq" %%a in (`scraper.exe -version`) do (
 		if "%%a"=="%scraperVersion%" goto systemSelection
+		if "%scraperVersion%"=="" echo ERROR: Unable to check for updates on GitHub. & echo. & goto systemSelection
 		echo Updating sselph scraper from %%a to %scraperVersion%, please wait... & echo.
 	)
 ) else echo Downloading sselph scraper, please wait... & echo.
@@ -100,7 +108,7 @@ PowerShell (New-Object System.Net.WebClient).DownloadFile('%scraperURL%', '%~dp0
 rem Unzip the scraper and remove unnecessary files
 if exist "%scraperZip%" (
 	PowerShell Expand-Archive -Path '%scraperZip%' -DestinationPath '.\' -Force
-	del %scraperZip% LICENSE.txt	
+	del LICENSE.txt %scraperZip%	
 ) else echo ERROR: Unable to download the scraper. Exiting... & pause >nul & exit
 	
 :systemSelection
@@ -152,7 +160,7 @@ rem If mame device, consoleImg not used
 rem Scraping roms
 	echo Scraping %%i in progress. Please wait...
 	echo.
-"%~dp0scraper.exe" %appendMode% !arcade! -rom_dir="%%i" %imagePath% -image_dir="%%i\%imagePath:~15,-1%" %imageSuffix% -output_file="%%i\gamelist.xml" -missing="%%i\_%%i_missing.txt" %addNotFound% !consoleImg! %consoleSrc% %downloadImg% %extraExt% %imgFormat% %langSS% %maxHeight% %maxWidth% %noThumb% %refreshXML% %regionSS% %username% %password% %useFilename% %useNoIntroName% %workersN%
+"%~dp0scraper.exe" %appendMode% !arcade! -rom_dir="%%i" %imagePath% -image_dir="%%i\%imagePath:~15,-1%" %imageSuffix% -output_file="%%i\gamelist.xml" -missing="%%i\_%%i_missing.txt" %addNotFound% !consoleImg! %consoleSrc% %downloadImg% %extraExt% %imgFormat% %langSS% %maxHeight% %maxWidth% %noThumb% %thumbOnly% %refreshXML% %regionSS% %username% %password% %useFilename% %useNoIntroName% %workersN%
 	echo.
 	
 )
