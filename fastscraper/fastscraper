@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-releaseDate=28.01.2017
+releaseDate=29.01.2017
 echo "fastscraper ver. $releaseDate"
 
 # Set ScreenScraper credentials
@@ -74,19 +74,23 @@ password=""
 		workersN=-workers=4
 
 # Set default roms directory to launch directory
-romsDir=`pwd`
-scriptPath=`pwd`
+romsDir=$(pwd)
+scriptPath=$(pwd)
+
+# Check internet connection
+nc -z 8.8.8.8 53  >/dev/null 2>&1
+if [ ! $? -eq 0 ]; then echo "ERROR: No internet connection available. Exiting..."; exit 1; fi
 
 # Function to download the latest scraper version
 download_scraper()
 {
 # Detect OS architecture
-	if [ `uname -m` == "armv7l" ]; then arch=rpi2;
-	elif [ `uname -m` == "armv6l" ]; then 
+	if [ $(uname -m) == "armv7l" ]; then arch=rpi2;
+	elif [ $(uname -m) == "armv6l" ]; then 
 		arch=rpi
 		thumbOnly=-thumb_only=true
 		workersN=-workers=1
-	elif [ `uname -m` == "x86_64" ]; then arch=amd64;
+	elif [ $(uname -m) == "x86_64" ]; then arch=amd64;
 	else arch=386; fi
 
 # Detect OS platform
@@ -126,8 +130,13 @@ if [ -f "./scraper" ]; then
 	chmod u+x ./scraper
 	if [ "$scraperVersion" = "$(./scraper -version)" ]; then :;
 	else
-		echo "Updating sselph scraper from $(./scraper -version) to $scraperVersion, please wait..."
-		download_scraper
+		if [ "$scraperVersion" = "" ]; then
+			echo "ERROR: Unable to check for updates on GitHub."
+			echo ""
+		else
+			echo "Updating sselph scraper from $(./scraper -version) to $scraperVersion, please wait..."
+			download_scraper
+		fi
 	fi
 else
 	echo "Downloading sselph scraper, please wait..."
@@ -147,7 +156,7 @@ folder_browser()
 
 # Check if scraping from network drive and show warning about stopping ES
 	cd "$romsDir" && clear && echo "Selected roms folder: $romsDir"
-	if [[ `df "$romsDir" | grep '^//'` == "//"* ]]; then echo "Don't forget to stop EmulationStation before scraping!"; fi
+	if [[ $(df "$romsDir" | grep '^//') == "//"* ]]; then echo "Don't forget to stop EmulationStation before scraping!"; fi
 	echo ""
 }
 
