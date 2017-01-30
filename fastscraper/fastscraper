@@ -78,7 +78,7 @@ romsDir=$(pwd)
 scriptPath=$(pwd)
 
 # Check internet connection
-uname -m | grep 'arm' >/dev/null && ping -q -c 1 -W 1 8.8.8.8 >/dev/null 2>&1 || nc -z 8.8.8.8 53  >/dev/null 2>&1
+uname -m | grep 'arm' >/dev/null && ping -q -c 1 -W 1 8.8.8.8 >/dev/null 2>&1 || nc -z 8.8.8.8 53 >/dev/null 2>&1
 if [ ! $? -eq 0 ]; then echo "ERROR: No internet connection available. Exiting..."; exit 1; fi
 
 # Function to download the latest scraper version
@@ -112,7 +112,7 @@ download_scraper()
 		scraperZip=scraper_${platform}_${arch}.zip
 	fi
 	scraperURL=https://github.com/sselph/scraper/releases/download/${scraperVersion}/${scraperZip}
-	wget -q $scraperURL || { echo "ERROR: Unable to download the scraper. Exiting..."; exit 1; }
+	curl -s -LOk $scraperURL || { echo "ERROR: Unable to download the scraper. Exiting..."; exit 1; }
 
 # Unzip the scraper, remove unnecessary files and set appropriate permissions
 	unzip -o -q $scraperZip scraper || { echo "ERROR: Couldn't unzip the scraper. Exiting..."; exit 1; }
@@ -123,7 +123,7 @@ download_scraper()
 
 # scraperBIN
 # Query the API to get the latest release tag
-scraperVersion=$(wget -qO - https://api.github.com/repos/sselph/scraper/releases/latest | grep tag_name | cut -d '"' -f 4)
+scraperVersion=$(curl -s https://api.github.com/repos/sselph/scraper/releases/latest | grep tag_name | cut -d '"' -f 4)
 
 # Download or update scraper if needed
 if [ -f "./scraper" ]; then
