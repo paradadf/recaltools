@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-releaseDate=29.01.2017
+releaseDate=30.01.2017
 echo "fastscraper ver. $releaseDate"
 
 # Set ScreenScraper credentials
@@ -78,7 +78,7 @@ romsDir=$(pwd)
 scriptPath=$(pwd)
 
 # Check internet connection
-nc -z 8.8.8.8 53  >/dev/null 2>&1
+uname -m | grep 'arm' >/dev/null && ping -q -c 1 -W 1 8.8.8.8 >/dev/null 2>&1 || nc -z 8.8.8.8 53  >/dev/null 2>&1
 if [ ! $? -eq 0 ]; then echo "ERROR: No internet connection available. Exiting..."; exit 1; fi
 
 # Function to download the latest scraper version
