@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-releaseDate=30.01.2017
+releaseDate=01.02.2017
 echo "fastscraper ver. $releaseDate"
 
 # Set ScreenScraper credentials
@@ -73,13 +73,34 @@ password=""
 	# Use N worker threads to process roms. (default 1)
 		workersN=-workers=4
 
+# Create dictionary
+	# Get OS language
+	if [ -f "/recalbox/share/system/recalbox.conf" ]; then
+		language=$(grep '^system.language' /recalbox/share/system/recalbox.conf | cut -d '=' -f 2 | cut -d '_' -f 1)
+	else
+		language=$(locale | grep 'LANG=' | cut -d '=' -f2 | cut -d '"' -f2 | cut -d '_' -f1)
+	fi
+
+	# Select dictionary
+	case $language in
+		es)
+			dict=('ERROR: Sin conexión a internet. Saliendo...' 'no es una plataforma soportada' 'ERROR: Imposible descargar el scraper. Saliendo...' "ERROR: Imposible descomprimir el scraper. Saliendo..." 'ERROR: Imposible comprobar actualizaciones en GitHub.' 'Actualizando sselph scraper de' 'a' ', espere por favor...' 'Descargando sselph scraper' 'Abriendo Explorador de Carpetas...' 'Explorador de Carpetas para' ' aun no implementado, lo siento!' 'Carpeta de roms seleccionada:' "No olvides detener EmulationStation antes de scrapear!" "¿Qué sistema(s) desea scrapear? Escribe \"all\" para todos los sistemas o \"cd\" para abrir el navegador de carpetas." 'Entrada incorrecta!' '¿Deseas anexar los gamelists existentes? [Y/N]:' 'Scrapeando' 'en progreso. Espere por favor...' 'Inicio' 'Fin' 'Duración') ;;
+		de)
+			dict=('ERROR: No internet connection available. Exiting...' 'is not a supported platform' 'ERROR: Unable to download the scraper. Exiting...' "ERROR: Couldn't unzip the scraper. Exiting..." 'ERROR: Unable to check for updates on GitHub.' 'Updating sselph scraper from' 'to' ', please wait...' 'Downloading sselph scraper' 'Opening Folder Browser...' 'Folder Browser for' 'not implemented yet, sorry!' 'Selected roms folder:' "Don't forget to stop EmulationStation before scraping!" "Which system(s) do you want to scrape? Type \"all\" for all systems or \"cd\" to open the folder browser." 'Incorrect input!' 'Would you like to append existing gamelists? [Y/N]:' 'Scraping' 'in progress. Please wait...' 'Start' 'Finish' 'Duration') ;;
+		fr)
+			dict=('ERROR: No internet connection available. Exiting...' 'is not a supported platform' 'ERROR: Unable to download the scraper. Exiting...' "ERROR: Couldn't unzip the scraper. Exiting..." 'ERROR: Unable to check for updates on GitHub.' 'Updating sselph scraper from' 'to' ', please wait...' 'Downloading sselph scraper' 'Opening Folder Browser...' 'Folder Browser for' 'not implemented yet, sorry!' 'Selected roms folder:' "Don't forget to stop EmulationStation before scraping!" "Which system(s) do you want to scrape? Type \"all\" for all systems or \"cd\" to open the folder browser." 'Incorrect input!' 'Would you like to append existing gamelists? [Y/N]:' 'Scraping' 'in progress. Please wait...' 'Start' 'Finish' 'Duration') ;;
+		*)
+			if [ ! "$language" == "en" ]; then echo "OS's language not available. Using english..."; fi;
+			dict=('ERROR: No internet connection available. Exiting...' 'is not a supported platform' 'ERROR: Unable to download the scraper. Exiting...' "ERROR: Couldn't unzip the scraper. Exiting..." 'ERROR: Unable to check for updates on GitHub.' 'Updating sselph scraper from' 'to' ', please wait...' 'Downloading sselph scraper' 'Opening Folder Browser...' 'Folder Browser for' 'not implemented yet, sorry!' 'Selected roms folder:' "Don't forget to stop EmulationStation before scraping!" "Which system(s) do you want to scrape? Type \"all\" for all systems or \"cd\" to open the folder browser." 'Incorrect input!' 'Would you like to append existing gamelists? [Y/N]:' 'Scraping' 'in progress. Please wait...' 'Start' 'Finish' 'Duration') ;;
+	esac
+
 # Set default roms directory to launch directory
 romsDir=$(pwd)
 scriptPath=$(pwd)
 
 # Check internet connection
 uname -m | grep 'arm' >/dev/null && ping -q -c 1 -W 1 8.8.8.8 >/dev/null 2>&1 || nc -z 8.8.8.8 53 >/dev/null 2>&1
-if [ ! $? -eq 0 ]; then echo "ERROR: No internet connection available. Exiting..."; exit 1; fi
+if [ ! $? -eq 0 ]; then echo "${dict[0]}"; exit 1; fi
 
 # Function to download the latest scraper version
 download_scraper()
@@ -101,7 +122,7 @@ download_scraper()
 	elif [[ $(uname) == 'FreeBSD' ]]; then
 		platform='freebsd'
 	else
-		echo "$(uname) is not a supported platform"
+		echo "$(uname) ${dict[1]}"
 		exit 1
 	fi
 
@@ -112,10 +133,10 @@ download_scraper()
 		scraperZip=scraper_${platform}_${arch}.zip
 	fi
 	scraperURL=https://github.com/sselph/scraper/releases/download/${scraperVersion}/${scraperZip}
-	curl -s -LOk $scraperURL || { echo "ERROR: Unable to download the scraper. Exiting..."; exit 1; }
+	curl -s -LOk $scraperURL || { echo "${dict[2]}"; exit 1; }
 
 # Unzip the scraper, remove unnecessary files and set appropriate permissions
-	unzip -o -q $scraperZip scraper || { echo "ERROR: Couldn't unzip the scraper. Exiting..."; exit 1; }
+	unzip -o -q $scraperZip scraper || { echo "${dict[3]}"; exit 1; }
 	rm $scraperZip
 	chmod u+x ./scraper
 	echo ""
@@ -131,15 +152,15 @@ if [ -f "./scraper" ]; then
 	if [ "$scraperVersion" = "$(./scraper -version)" ]; then :;
 	else
 		if [ "$scraperVersion" = "" ]; then
-			echo "ERROR: Unable to check for updates on GitHub."
+			echo "${dict[4]}"
 			echo ""
 		else
-			echo "Updating sselph scraper from $(./scraper -version) to $scraperVersion, please wait..."
+			echo "${dict[5]} $(./scraper -version) ${dict[6]} $scraperVersion${dict[7]}"
 			download_scraper
 		fi
 	fi
 else
-	echo "Downloading sselph scraper, please wait..."
+	echo "${dict[8]} $scraperVersion${dict[7]}"
 	download_scraper
 fi
 
@@ -147,25 +168,25 @@ fi
 folder_browser()
 {
 	echo ""
-	echo "Opening Folder Browser..."
+	echo "${dict[9]}"
 	case "$OSTYPE" in
-		darwin*) echo "Folder Browser for macOS not implemented yet, sorry!" ;;
-		freebsd*) echo "Folder Browser for FreeBSD not implemented yet, sorry!" ;;
+		darwin*) echo "${dict[10]} macOS ${dict[11]}" ;;
+		freebsd*) echo "${dict[10]} FreeBSD ${dict[11]}!" ;;
 		linux*) romsDir=`zenity --file-selection --directory --title="Please choose the roms folder."` ;;
 	esac
 
 # Check if scraping from network drive and show warning about stopping ES
-	cd "$romsDir" && clear && echo "Selected roms folder: $romsDir"
-	if [[ $(df "$romsDir" | grep '^//') == "//"* ]]; then echo "Don't forget to stop EmulationStation before scraping!"; fi
+	cd "$romsDir" && clear && echo "${dict[12]} $romsDir"
+	if [[ $(df "$romsDir" | grep '^//') == "//"* ]]; then echo "${dict[13]}"; fi
 	echo ""
 }
 
 # systemSelection
 # Select the system to scrape (type "all" to scrape all folders)
 while true; do
-	echo "Which system(s) do you want to scrape? All? Type \"cd\" to open the folder browser."
+	echo "${dict[14]}"
 	read system
-	if [ "$system" = "" ]; then echo "Incorrect input!";
+	if [ "$system" = "" ]; then echo "${dict[15]}";
 	elif [ "$system" = "cd" ]; then folder_browser;
 	elif [ ! "$system" = "all" ]; then break;
 	else
@@ -177,10 +198,10 @@ done
 # Choose to append an existing (y) or create a new gamelist (n)
 while true; do
 	if [ "$refreshXML" = "-refresh=true" ]; then appendMode="" && break; fi
-	read -p "Would you like to append existing gamelists? [Y/N]: " appendXML
+	read -p "${dict[16]} " appendXML
 	if [[ "$appendXML" = "y" || "$appendXML" = "Y" ]]; then appendMode=-append && break; fi
 	if [[ "$appendXML" = "n" || "$appendXML" = "N" ]]; then appendMode="" && break; fi
-	echo "Incorrect input!"
+	echo "${dict[15]}"
 done
 
 # startTime
@@ -205,7 +226,7 @@ for i in $system; do
 	echo ""
 
 # Scraping roms
-	echo "Scraping $i in progress. Please wait..."
+	echo "${dict[17]} $i ${dict[18]}"
 	echo ""
 "$scriptPath/scraper" $appendMode $arcade -rom_dir="$i" $imagePath -image_dir="$i/${imagePath:14}" $imageSuffix -output_file="$i/gamelist.xml" -missing="$i/_${i}_missing.txt" $addNotFound $consoleImg $consoleSrc $downloadImg $extraExt $imgFormat $langSS $maxHeight $maxWidth $noThumb $thumbOnly $refreshXML $regionSS $username $password $useFilename $useNoIntroName $workersN
 	echo ""
@@ -225,10 +246,10 @@ if [ $ss -lt 10 ]; then ss=0$ss; fi
 
 DURATION=$hh:$mm:$ss
 
-echo "Start    : $startTime"
-echo "Finish   : $endTime"
-echo "         ------------"
-echo "Duration : $DURATION"
+echo "${dict[19]}		: $startTime"
+echo "${dict[20]}		: $endTime"
+echo "           	------------"
+echo "${dict[21]}	: $DURATION"
 
 echo ""	
 exit 0
