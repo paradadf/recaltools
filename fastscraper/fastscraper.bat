@@ -1,6 +1,6 @@
 @echo off
 color 3f
-set releaseDate=29.01.2017
+set releaseDate=02.02.2017
 title fastscraper ver. %releaseDate%
 
 rem Set ScreenScraper credentials
@@ -73,13 +73,45 @@ rem Flags - Static parameters
 
 	rem Use N worker threads to process roms. (default 1)
 		set workersN=-workers=4
+		
+rem Create dictionary
+	rem Get OS's language
+		for /F "tokens=3" %%a in ('reg Query "HKCU\Control Panel\Desktop" /V PreferredUILanguages ^| find "PreferredUILanguages"') do set language=%%a
+		set language=%language:~0,-3%
 
-rem Set default roms directory to launch directory
-set "romsDir=%cd%"	
+	rem Select dictionary
+		if "%language%"=="es" goto es
+		if "%language%"=="de" goto de
+		if "%language%"=="fr" goto fr
+		goto *
+		
+		:es
+			set "dict=ERROR: Sin conexión a internet. Saliendo...;no es una plataforma soportada.;ERROR: Imposible descargar el scraper. Saliendo...;ERROR: Imposible descomprimir el scraper. Saliendo...;ERROR: Imposible comprobar actualizaciones en GitHub.;Actualizando sselph scraper de;a;, espere por favor...;Descargando sselph scraper;Abriendo Explorador de Carpetas...;Explorador de Carpetas para;aun no implementado, lo siento!;Carpeta de roms seleccionada:;No olvides detener EmulationStation antes de scrapear!;¿Qué sistema(s) desea scrapear? Escribe "all" para todos los sistemas o "cd" para abrir el navegador de carpetas.;Entrada incorrecta!;¿Deseas anexar los gamelists existentes? [Y/N]:;Scrapeando;en progreso. Espere por favor...;Inicio;Fin;Duración;Por favor, seleccione la carpeta de roms; Scrapeado finalizado!" & goto createDict
+		:de
+			set "dict=ERROR: No internet connection available. Exiting...;is not a supported platform.;ERROR: Unable to download the scraper. Exiting...;ERROR: Couldn't unzip the scraper. Exiting...;ERROR: Unable to check for updates on GitHub.;Updating sselph scraper from;to;, please wait...;Downloading sselph scraper;Opening Folder Browser...;Folder Browser for;not implemented yet, sorry!;Selected roms folder:;Don't forget to stop EmulationStation before scraping!;Which system(s) do you want to scrape? Type "all" for all systems or "cd" to open the folder browser.;Incorrect input!;Would you like to append existing gamelists? [Y/N]:;Scraping;in progress. Please wait...;Start;Finish;Duration;Please choose the roms folder;Scraping has finished!" & goto createDict
+		:fr
+			set "dict=ERROR: No internet connection available. Exiting...;is not a supported platform.;ERROR: Unable to download the scraper. Exiting...;ERROR: Couldn't unzip the scraper. Exiting...;ERROR: Unable to check for updates on GitHub.;Updating sselph scraper from;to;, please wait...;Downloading sselph scraper;Opening Folder Browser...;Folder Browser for;not implemented yet, sorry!;Selected roms folder:;Don't forget to stop EmulationStation before scraping!;Which system(s) do you want to scrape? Type "all" for all systems or "cd" to open the folder browser.;Incorrect input!;Would you like to append existing gamelists? [Y/N]:;Scraping;in progress. Please wait...;Start;Finish;Duration;Please choose the roms folder;Scraping has finished!" & goto createDict
+		:*
+			if not "%language%"=="en" echo Can't get OS's language. English will be used.
+			set "dict=ERROR: No internet connection available. Exiting...;is not a supported platform.;ERROR: Unable to download the scraper. Exiting...;ERROR: Couldn't unzip the scraper. Exiting...;ERROR: Unable to check for updates on GitHub.;Updating sselph scraper from;to;, please wait...;Downloading sselph scraper;Opening Folder Browser...;Folder Browser for;not implemented yet, sorry!;Selected roms folder:;Don't forget to stop EmulationStation before scraping!;Which system(s) do you want to scrape? Type "all" for all systems or "cd" to open the folder browser.;Incorrect input!;Would you like to append existing gamelists? [Y/N]:;Scraping;in progress. Please wait...;Start;Finish;Duration;Please choose the roms folder;Scraping has finished!"
+		
+		:createDict
+		set /A count=-1
+		call :parseDict "%dict%"
+
+			:parseDict
+			set /A count+=1
+			for /f "tokens=1* delims=;" %%i in ("%~1") do (
+				set dict[%count%]=%%i
+				call :parseDict "%%j"
+			)
 
 rem Check internet connection
 ping 8.8.8.8 -n 1 -w 1000 >nul
-if errorlevel 1 echo ERROR: No internet connection available. Exiting... & pause >nul & exit
+if errorlevel 1 echo %dict[0]% & pause >nul & exit
+
+rem Set default roms directory to launch directory
+set "romsDir=%cd%"	
 
 :scraperEXE
 rem Detect OS architecture
@@ -95,10 +127,10 @@ rem Download or update scraper if needed
 if exist "scraper.exe" (
 	for /F "tokens=* usebackq" %%a in (`scraper.exe -version`) do (
 		if "%%a"=="%scraperVersion%" goto systemSelection
-		if "%scraperVersion%"=="" echo ERROR: Unable to check for updates on GitHub. & echo. & goto systemSelection
-		echo Updating sselph scraper from %%a to %scraperVersion%, please wait... & echo.
+		if "%scraperVersion%"=="" echo %dict[4]% & echo. & goto systemSelection
+		echo %dict[5]% %%a %dict[6]% %scraperVersion%%dict[7]% & echo.
 	)
-) else echo Downloading sselph scraper, please wait... & echo.
+) else echo %dict[8]% %scraperVersion%%dict[7]% & echo.
 
 rem Build the file name, download url and download the file to the current location
 set scraperZip=scraper_windows_%arch%.zip
@@ -109,15 +141,15 @@ rem Unzip the scraper and remove unnecessary files
 if exist "%scraperZip%" (
 	PowerShell Expand-Archive -Path '%scraperZip%' -DestinationPath '.\' -Force
 	del LICENSE.txt %scraperZip%	
-) else echo ERROR: Unable to download the scraper. Exiting... & pause >nul & exit
+) else echo %dict[2]% & pause >nul & exit
 	
 :systemSelection
 rem Select the system to scrape (type "all" to scrape all folders)
 setlocal EnableDelayedExpansion
-echo Which system(s) do you want to scrape? All? Type "cd" to open the folder browser.
+echo %dict[14]%
 set /P "system="
 if "%system%"=="cd" goto SUB_folderBrowser
-if "%system%"=="" echo Incorrect input^^! & goto systemSelection
+if "%system%"=="" echo %dict[15]% & goto systemSelection
 if /I not "%system%"=="all" goto modeSelection
 	set "system="
 	for /F "delims=" %%f in ('dir /B /A:D') do set system=!system! %%f
@@ -125,10 +157,10 @@ if /I not "%system%"=="all" goto modeSelection
 :modeSelection
 rem Choose to append an existing (y) or create a new gamelist (n)
 if "%refreshXML%"=="-refresh=true" goto fullMode
-set /P "appendXML=Would you like to append existing gamelists? [Y/N]: "
+set /P "appendXML=%dict[16]% "
 if /I "%appendXML%"=="y" goto appendMode
 if /I "%appendXML%"=="n" goto fullMode
-echo Incorrect input & goto modeSelection
+echo %dict[15]% & goto modeSelection
 
 	:appendMode
 	set appendMode=-append & goto startTime
@@ -155,10 +187,10 @@ rem If mame device, consoleImg not used
 	if not "!arcade!"=="" set "consoleImg="
 
 	echo.
-	title fastscraper ver. %releaseDate% - Scraping %%i...
+	title fastscraper ver. %releaseDate% - %dict[17]% %%i...
 
 rem Scraping roms
-	echo Scraping %%i in progress. Please wait...
+	echo %dict[17]% %%i %dict[18]%
 	echo.
 "%~dp0scraper.exe" %appendMode% !arcade! -rom_dir="%%i" %imagePath% -image_dir="%%i\%imagePath:~15,-1%" %imageSuffix% -output_file="%%i\gamelist.xml" -missing="%%i\_%%i_missing.txt" %addNotFound% !consoleImg! %consoleSrc% %downloadImg% %extraExt% %imgFormat% %langSS% %maxHeight% %maxWidth% %noThumb% %thumbOnly% %refreshXML% %regionSS% %username% %password% %useFilename% %useNoIntroName% %workersN%
 	echo.
@@ -167,7 +199,8 @@ rem Scraping roms
 
 rem ******************** END MAIN CODE SECTION
 
-title fastscraper ver. %releaseDate% - Scraping has finished^^!
+setlocal DisableDelayedExpansion
+title fastscraper ver. %releaseDate% - %dict[23]%
 
 rem Save finish time
 set endTime=%time%
@@ -196,25 +229,25 @@ rem Change formatting for the start and end times
 
     set DURATION=%hh%:%mm%:%ss%,%cc%
 
-    echo Start    : %startTime%
-    echo Finish   : %endTime%
-    echo          ---------------
-    echo Duration : %DURATION%
+    echo %dict[19]%		: %startTime%
+    echo %dict[20]%		: %endTime%
+    echo          	---------------
+    echo %dict[21]%	: %DURATION%
 	
 pause >nul & exit
 
 :SUB_folderBrowser
 setlocal DisableDelayedExpansion
 echo.
-echo Opening Folder Browser...
+echo %dict[9]%
 
 rem PowerShell-Subroutine to open a Folder Browser
 set "psCommand="(New-Object -COM Shell.Application)^
-.BrowseForFolder(0,'Please choose the roms folder.',0,0).self.path""
+.BrowseForFolder(0,'%dict[22]%.',0,0).self.path""
 for /F "usebackq delims=" %%i in (`PowerShell %psCommand%`) do set "newRoot=%%i"
 
 set "romsDir=%newRoot%"
-cd "%romsDir%" & cls & echo Selected roms folder: %romsDir%
+cd "%romsDir%" & echo %dict[12]% %romsDir%
 rem Check if scraping from network drive and show warning about stopping ES
-if not x%romsDir:\\=%==x%romsDir% echo Don't forget to stop EmulationStation before scraping!
+if not x%romsDir:\\=%==x%romsDir% echo %dict[13]%
 echo. & goto systemSelection
