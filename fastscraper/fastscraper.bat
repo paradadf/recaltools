@@ -237,7 +237,7 @@ rem Change formatting for the start and end times
     echo          	---------------
     echo %dict[21]%	: %DURATION%
 	
-pause >nul & exit
+popd & pause >nul & exit
 
 :SUB_folderBrowser
 setlocal DisableDelayedExpansion
@@ -250,7 +250,7 @@ set "psCommand="(New-Object -COM Shell.Application)^
 for /F "usebackq delims=" %%i in (`PowerShell %psCommand%`) do set "newRoot=%%i"
 
 set "romsDir=%newRoot%"
-cd "%romsDir%" & echo %dict[12]% %romsDir%
+cls & pushd "%romsDir%" & echo %dict[12]% %romsDir%
 rem Check if scraping from network drive and show warning about stopping ES
 if not x%romsDir:\\=%==x%romsDir% echo %dict[13]%
 echo. & goto systemSelection
