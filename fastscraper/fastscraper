@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-releaseDate=01.02.2017
+releaseDate=02.02.2017
 echo "fastscraper ver. $releaseDate"
 
 # Set ScreenScraper credentials
@@ -84,23 +84,23 @@ password=""
 	# Select dictionary
 	case $language in
 		es)
-			dict=('ERROR: Sin conexión a internet. Saliendo...' 'no es una plataforma soportada.' 'ERROR: Imposible descargar el scraper. Saliendo...' "ERROR: Imposible descomprimir el scraper. Saliendo..." 'ERROR: Imposible comprobar actualizaciones en GitHub.' 'Actualizando sselph scraper de' 'a' ', espere por favor...' 'Descargando sselph scraper' 'Abriendo Explorador de Carpetas...' 'Explorador de Carpetas para' ' aun no implementado, lo siento!' 'Carpeta de roms seleccionada:' "No olvides detener EmulationStation antes de scrapear!" "¿Qué sistema(s) desea scrapear? Escribe \"all\" para todos los sistemas o \"cd\" para abrir el navegador de carpetas." 'Entrada incorrecta!' '¿Deseas anexar los gamelists existentes? [Y/N]:' 'Scrapeando' 'en progreso. Espere por favor...' 'Inicio' 'Fin' 'Duración') ;;
+			dict=('ERROR: Sin conexión a internet. Saliendo...' 'no es una plataforma soportada.' 'ERROR: Imposible descargar el scraper. Saliendo...' "ERROR: Imposible descomprimir el scraper. Saliendo..." 'ERROR: Imposible comprobar actualizaciones en GitHub.' 'Actualizando sselph scraper de' 'a' ', espere por favor...' 'Descargando sselph scraper' 'Abriendo Explorador de Carpetas...' 'Explorador de Carpetas para' ' aun no implementado, lo siento!' 'Carpeta de roms seleccionada:' "No olvides detener EmulationStation antes de scrapear!" "¿Qué sistema(s) desea scrapear? Escribe \"all\" para todos los sistemas o \"cd\" para abrir el navegador de carpetas." 'Entrada incorrecta!' '¿Deseas anexar los gamelists existentes? [Y/N]:' 'Scrapeando' 'en progreso. Espere por favor...' 'Inicio' 'Fin' 'Duración' 'Por favor, seleccione la carpeta de roms.' 'Scrapeado finalizado!') ;;
 		de)
-			dict=('ERROR: No internet connection available. Exiting...' 'is not a supported platform.' 'ERROR: Unable to download the scraper. Exiting...' "ERROR: Couldn't unzip the scraper. Exiting..." 'ERROR: Unable to check for updates on GitHub.' 'Updating sselph scraper from' 'to' ', please wait...' 'Downloading sselph scraper' 'Opening Folder Browser...' 'Folder Browser for' 'not implemented yet, sorry!' 'Selected roms folder:' "Don't forget to stop EmulationStation before scraping!" "Which system(s) do you want to scrape? Type \"all\" for all systems or \"cd\" to open the folder browser." 'Incorrect input!' 'Would you like to append existing gamelists? [Y/N]:' 'Scraping' 'in progress. Please wait...' 'Start' 'Finish' 'Duration') ;;
+			dict=('ERROR: No internet connection available. Exiting...' 'is not a supported platform.' 'ERROR: Unable to download the scraper. Exiting...' "ERROR: Couldn't unzip the scraper. Exiting..." 'ERROR: Unable to check for updates on GitHub.' 'Updating sselph scraper from' 'to' ', please wait...' 'Downloading sselph scraper' 'Opening Folder Browser...' 'Folder Browser for' 'not implemented yet, sorry!' 'Selected roms folder:' "Don't forget to stop EmulationStation before scraping!" "Which system(s) do you want to scrape? Type \"all\" for all systems or \"cd\" to open the folder browser." 'Incorrect input!' 'Would you like to append existing gamelists? [Y/N]:' 'Scraping' 'in progress. Please wait...' 'Start' 'Finish' 'Duration' 'Please choose the roms folder.' 'Scraping has finished!') ;;
 		fr)
-			dict=('ERROR: No internet connection available. Exiting...' 'is not a supported platform.' 'ERROR: Unable to download the scraper. Exiting...' "ERROR: Couldn't unzip the scraper. Exiting..." 'ERROR: Unable to check for updates on GitHub.' 'Updating sselph scraper from' 'to' ', please wait...' 'Downloading sselph scraper' 'Opening Folder Browser...' 'Folder Browser for' 'not implemented yet, sorry!' 'Selected roms folder:' "Don't forget to stop EmulationStation before scraping!" "Which system(s) do you want to scrape? Type \"all\" for all systems or \"cd\" to open the folder browser." 'Incorrect input!' 'Would you like to append existing gamelists? [Y/N]:' 'Scraping' 'in progress. Please wait...' 'Start' 'Finish' 'Duration') ;;
+			dict=('ERROR: No internet connection available. Exiting...' 'is not a supported platform.' 'ERROR: Unable to download the scraper. Exiting...' "ERROR: Couldn't unzip the scraper. Exiting..." 'ERROR: Unable to check for updates on GitHub.' 'Updating sselph scraper from' 'to' ', please wait...' 'Downloading sselph scraper' 'Opening Folder Browser...' 'Folder Browser for' 'not implemented yet, sorry!' 'Selected roms folder:' "Don't forget to stop EmulationStation before scraping!" "Which system(s) do you want to scrape? Type \"all\" for all systems or \"cd\" to open the folder browser." 'Incorrect input!' 'Would you like to append existing gamelists? [Y/N]:' 'Scraping' 'in progress. Please wait...' 'Start' 'Finish' 'Duration' 'Please choose the roms folder.' 'Scraping has finished!') ;;
 		*)
 			if [ ! "$language" == "en" ]; then echo "Can't get OS's language. English will be used."; fi;
-			dict=('ERROR: No internet connection available. Exiting...' 'is not a supported platform.' 'ERROR: Unable to download the scraper. Exiting...' "ERROR: Couldn't unzip the scraper. Exiting..." 'ERROR: Unable to check for updates on GitHub.' 'Updating sselph scraper from' 'to' ', please wait...' 'Downloading sselph scraper' 'Opening Folder Browser...' 'Folder Browser for' 'not implemented yet, sorry!' 'Selected roms folder:' "Don't forget to stop EmulationStation before scraping!" "Which system(s) do you want to scrape? Type \"all\" for all systems or \"cd\" to open the folder browser." 'Incorrect input!' 'Would you like to append existing gamelists? [Y/N]:' 'Scraping' 'in progress. Please wait...' 'Start' 'Finish' 'Duration') ;;
+			dict=('ERROR: No internet connection available. Exiting...' 'is not a supported platform.' 'ERROR: Unable to download the scraper. Exiting...' "ERROR: Couldn't unzip the scraper. Exiting..." 'ERROR: Unable to check for updates on GitHub.' 'Updating sselph scraper from' 'to' ', please wait...' 'Downloading sselph scraper' 'Opening Folder Browser...' 'Folder Browser for' 'not implemented yet, sorry!' 'Selected roms folder:' "Don't forget to stop EmulationStation before scraping!" "Which system(s) do you want to scrape? Type \"all\" for all systems or \"cd\" to open the folder browser." 'Incorrect input!' 'Would you like to append existing gamelists? [Y/N]:' 'Scraping' 'in progress. Please wait...' 'Start' 'Finish' 'Duration' 'Please choose the roms folder.' 'Scraping has finished!') ;;
 	esac
-
-# Set default roms directory to launch directory
-romsDir=$(pwd)
-scriptPath=$(pwd)
 
 # Check internet connection
 uname -m | grep 'arm' >/dev/null && ping -q -c 1 -W 1 8.8.8.8 >/dev/null 2>&1 || nc -z 8.8.8.8 53 >/dev/null 2>&1
 if [ ! $? -eq 0 ]; then echo "${dict[0]}"; exit 1; fi
+
+# Set default roms directory to launch directory
+romsDir=$(pwd)
+scriptPath=$(pwd)
 
 # Function to download the latest scraper version
 download_scraper()
@@ -172,11 +172,11 @@ folder_browser()
 	case "$OSTYPE" in
 		darwin*) echo "${dict[10]} macOS ${dict[11]}" ;;
 		freebsd*) echo "${dict[10]} FreeBSD ${dict[11]}!" ;;
-		linux*) romsDir=`zenity --file-selection --directory --title="Please choose the roms folder."` ;;
+		linux*) romsDir=`zenity --file-selection --directory --title="${dict[22]}"` ;;
 	esac
 
 # Check if scraping from network drive and show warning about stopping ES
-	cd "$romsDir" && clear && echo "${dict[12]} $romsDir"
+	cd "$romsDir" && echo "${dict[12]} $romsDir"
 	if [[ $(df "$romsDir" | grep '^//') == "//"* ]]; then echo "${dict[13]}"; fi
 	echo ""
 }
