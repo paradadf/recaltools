@@ -1,6 +1,6 @@
 @echo off
 color 3f
-set releaseDate=02.02.2017
+set releaseDate=09.02.2017
 title fastscraper ver. %releaseDate%
 
 rem Set ScreenScraper credentials
@@ -38,7 +38,7 @@ rem Flags - Static parameters
 	rem Comma separated order to prefer images, s=snap, t=title, m=marquee, c=cabniet, b=boxart, 3b=3D-boxart, fly=flyer. (default "t,m,s,c")
 		set mameImg=-mame_img="b,s,fly,m,t"
 		
-	rem Comma seperated order to prefer mame sources, ss=screenscraper, mamedb=mamedb-mirror, gdb=theGamesDB-neogeo (default "mamedb,gdb")
+	rem Comma seperated order to prefer mame sources, ss=screenscraper, adb=arcadeitalia, mamedb=mamedb-mirror, gdb=theGamesDB-neogeo (default "mamedb,gdb")
 		set mameSrc=-mame_src="ss"
 
 	rem The max height of images. Larger images will be resized.
