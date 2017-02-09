@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-releaseDate=02.02.2017
+releaseDate=09.02.2017
 echo "fastscraper ver. $releaseDate"
 
 # Set ScreenScraper credentials
@@ -37,7 +37,7 @@ password=""
 	# Comma separated order to prefer images, s=snap, t=title, m=marquee, c=cabniet, b=boxart, 3b=3D-boxart, fly=flyer. (default "t,m,s,c")
 		mameImg=-mame_img="b,s,fly,m,t"
 		
-	# Comma seperated order to prefer mame sources, ss=screenscraper, mamedb=mamedb-mirror, gdb=theGamesDB-neogeo (default "mamedb,gdb")
+	# Comma seperated order to prefer mame sources, ss=screenscraper, adb=arcadeitalia, mamedb=mamedb-mirror, gdb=theGamesDB-neogeo (default "mamedb,gdb")
 		mameSrc=-mame_src="ss"
 
 	# The max height of images. Larger images will be resized.
