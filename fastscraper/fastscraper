@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-releaseDate=09.02.2017
+releaseDate=15.02.2017
 echo "fastscraper ver. $releaseDate"
 
 # Set ScreenScraper credentials
@@ -20,7 +20,7 @@ password=""
 		downloadImg=-download_images=true
 
 	# Comma separated list of extensions to also include in the scraper.
-		extraExt=-extra_ext=".scummvm,.ipf,.mx1,.mx2,.exe,.ws,.wsc,.wad"
+		extraExt=-extra_ext=".scummvm,.ipf,.mx1,.mx2,.exe,.ws,.wsc,.wad,.dsk,.tap,.trd,.tzx,.z80,.p,.a0,.crt,.nib"
 
 	# jpg or png, the format to write the images. (default "jpg")
 		imgFormat=-img_format="jpg"
