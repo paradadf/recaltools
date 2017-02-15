@@ -1,6 +1,6 @@
 @echo off
 color 3f
-set releaseDate=09.02.2017
+set releaseDate=15.02.2017
 title fastscraper ver. %releaseDate%
 
 rem Set ScreenScraper credentials
@@ -21,7 +21,7 @@ rem Flags - Static parameters
 		set downloadImg=-download_images=true
 
 	rem Comma separated list of extensions to also include in the scraper.
-		set extraExt=-extra_ext=".scummvm,.ipf,.mx1,.mx2,.exe,.ws,.wsc,.wad"
+		set extraExt=-extra_ext=".scummvm,.ipf,.mx1,.mx2,.exe,.ws,.wsc,.wad,.dsk,.tap,.trd,.tzx,.z80,.p,.a0,.crt,.nib"
 
 	rem jpg or png, the format to write the images. (default "jpg")
 		set imgFormat=-img_format="jpg"
