@@ -1,6 +1,6 @@
 @echo off
 color 3f
-set releaseDate=17.02.2017
+set releaseDate=25.04.2017
 title fastscraper ver. %releaseDate%
 
 rem Set ScreenScraper credentials
@@ -11,8 +11,8 @@ rem Flags - Static parameters
 	rem If true, add roms that are not found as an empty gamelist entry.
 		set addNotFound=-add_not_found=false
 
-	rem Comma separated order to prefer images, s=snapshot, b=boxart, f=fanart, a=banner, l=logo, 3b=3D boxart. (default "b")
-		set consoleImg=-console_img="b,s"
+	rem Comma separated order to prefer images, s=snapshot, b=boxart, f=fanart, a=banner, l=logo, 3b=3D boxart, mix3=Standard 3 mix, mix4=Standard 4 mix. (default "b")
+		set consoleImg=-console_img="mix3,b,s"
 
 	rem Comma seperated order to prefer console sources, ss=screenscraper, ovgdb=OpenVGDB, gdb=theGamesDB (default "gdb")
 		set consoleSrc=-console_src="ss"
@@ -24,7 +24,7 @@ rem Flags - Static parameters
 		set extraExt=-extra_ext=".scummvm,.ipf,.mx1,.mx2,.exe,.ws,.wsc,.wad,.dsk,.tap,.trd,.tzx,.z80,.p,.a0,.crt,.nib,.do,.po"
 
 	rem jpg or png, the format to write the images. (default "jpg")
-		set imgFormat=-img_format="jpg"
+		set imgFormat=-img_format="png"
 
 	rem The path to use for images in gamelist.xml. (default "images")
 		set imagePath=-image_path="./downloaded_images"
@@ -38,7 +38,7 @@ rem Flags - Static parameters
 	rem Comma separated order to prefer images, s=snap, t=title, m=marquee, c=cabniet, b=boxart, 3b=3D-boxart, fly=flyer. (default "t,m,s,c")
 		set mameImg=-mame_img="b,s,fly,m,t"
 		
-	rem Comma seperated order to prefer mame sources, ss=screenscraper, adb=arcadeitalia, mamedb=mamedb-mirror, gdb=theGamesDB-neogeo (default "mamedb,gdb")
+	rem Comma seperated order to prefer mame sources, ss=screenscraper, adb=arcadeitalia, mamedb=mamedb-mirror, gdb=theGamesDB-neogeo (default "adb,gdb")
 		set mameSrc=-mame_src="ss"
 
 	rem The max height of images. Larger images will be resized.
@@ -93,7 +93,7 @@ rem Create dictionary
 		:de
 			set "dict=FEHLER: Keine Internetverbindung verfügbar. Beenden...;ist kein unterstütztes Betriebssystem.;FEHLER: Scraper konnte nicht heruntergeladet werden. Beenden...;FEHLER: Scraper konnte nicht entpackt werden. Beenden...;FEHLER: Suche nach Updates auf GitHub fehlgeschlagen.;Update sselph scraper von;auf; wird durchgeführt, bitte warten...;Download sselph scraper;Öffne Ordner Browser...;Ordner Browser für;noch nicht implementiert, entschuldige!;Ausgewählter roms Ordner:;Vergiss nicht EmulationStation vor dem Scrapen zu beenden!;Welche(s) System(e) möchtest du scrapen? Tippe "all" für alle Systeme oder "cd", um den Ordner Browser zu öffnen.;Ungültige Eingabe!;Möchtest du die bestehende gamelists erweitern? [Y/N]:;Scrapen;in Arbeit. Bitte warten...;Beginn;Ende;Dauer;Bitte wählen Sie den Ordner roms;Scrapen ist beendet!" & goto createDict
 		:fr
-			set "dict=ERREUR : Pas de connexion internet disponible. Quitter...;n'est pas une plateforme prise en charge.;ERREUR : Impossible de télécharger le scraper. Quitter...;ERREUR : Impossible de décompresser le scraper. Quitter...;ERREUR : Impossible de rechercher les mises à jour sur GitHub.;La mise à jour de sselph scraper de;à;, veuillez patienter...;Le téléchargement sselph scraper;Ouverture du Navigateur de Dossier...;Navigateur de Dossier pour;pas encore mis en oeuvre, désolé !;Dossier roms sélectionné :;N'oubliez pas d'arrêter de EmulationStation avant de scrapez !;Quel(s) système(s) souhaitez-vous scrapez ? Tapez « all » pour tous les systèmes ou « cd » pour ouvrir le dossier du navigateur.;Entrée incorrecte !;Vous souhaitez ajouter les gamelists ? [Y/N] :;Scrapez;en course. Veuillez patienter...;Démarrer;Terminer;Durée;Veuillez choisir le dossier de roms;Scrapez est terminé !" & goto createDict
+			set "dict=ERREUR : Pas de connexion internet disponible. Quitter...;n'est pas une plateforme prise en charge.;ERREUR : Impossible de télécharger le scraper. Quitter...;ERREUR : Impossible de décompresser le scraper. Quitter...;ERREUR : Impossible de rechercher les mises à jour sur GitHub.;La mise à jour de sselph scraper de;à;, veuillez patienter...;Le téléchargement sselph scraper;Ouverture du Navigateur de Dossier...;Navigateur de Dossier pour;pas encore mis en oeuvre, désolé !;Dossier roms sélectionné :;N'oubliez pas d'arrêter de EmulationStation avant de scrapez !;Quel(s) système(s) souhaitez-vous scrapez ? Tapez « all » pour tous les systèmes ou « cd » pour ouvrir le dossier du navigateur.;Entrée incorrecte !;Vous souhaitez ajouter les gamelists ? [Y/N] :;Scrapez;en course. Veuillez patienter...;Démarrer;Terminer;Durée;Veuillez choisir le dossier de roms;Scrapez est terminé !" & goto createDict
 		:*
 			if not "%language%"=="en" echo Can't get OS's language. English will be used.
 			set "dict=ERROR: No internet connection available. Exiting...;is not a supported platform.;ERROR: Unable to download the scraper. Exiting...;ERROR: Couldn't unzip the scraper. Exiting...;ERROR: Unable to check for updates on GitHub.;Updating sselph scraper from;to;, please wait...;Downloading sselph scraper;Opening Folder Browser...;Folder Browser for;not implemented yet, sorry!;Selected roms folder:;Don't forget to stop EmulationStation before scraping!;Which system(s) do you want to scrape? Type "all" for all systems or "cd" to open the folder browser.;Incorrect input!;Would you like to append existing gamelists? [Y/N]:;Scraping;in progress. Please wait...;Start;Finish;Duration;Please choose the roms folder;Scraping has finished!"
