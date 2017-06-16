@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-releaseDate=25.04.2017
+releaseDate=15.06.2017
 echo "fastscraper ver. $releaseDate"
 
 # Set ScreenScraper credentials
@@ -15,9 +15,18 @@ password=""
 
 	# Comma seperated order to prefer console sources, ss=screenscraper, ovgdb=OpenVGDB, gdb=theGamesDB (default "gdb")
 		consoleSrc=-console_src="ss"
+
+	# If true, convert videos for the Raspberry Pi (e.g. 320x240@30fps) NOTE: This needs HandBrakeCLI installed
+		convertVideo=-convert_videos="true"
 		
 	# If false, don't download any images, instead see if the expected file is stored locally already. (default true)
 		downloadImg=-download_images=true
+
+	# If true, download marquees.
+		downloadMarquee=-download_marquees="false"
+
+	# If true, download videos.
+		downloadVideo=-download_videos="false"
 
 	# Comma separated list of extensions to also include in the scraper.
 		extraExt=-extra_ext=".scummvm,.ipf,.mx1,.mx2,.exe,.ws,.wsc,.wad,.dsk,.tap,.trd,.tzx,.z80,.p,.a0,.crt,.nib,.do,.po"
@@ -39,6 +48,15 @@ password=""
 		
 	# Comma seperated order to prefer mame sources, ss=screenscraper, adb=arcadeitalia, mamedb=mamedb-mirror, gdb=theGamesDB-neogeo (default "adb,gdb")
 		mameSrc=-mame_src="ss"
+
+	# jpg or png, the format to write the marquees. (default "png")
+		marqueeFormat=-marquee_format="png"
+
+	# The path to use for marquees in gamelist.xml. (default "images")
+		marqueePath=-marquee_path="./downloaded_images"
+
+	# The suffix added after rom name when creating marquee files. (default "-marquee")
+		marqueeSuffix=-marquee_suffix="-marquee"
 
 	# The max height of images. Larger images will be resized.
 		maxHeight=-max_height=0
@@ -69,6 +87,12 @@ password=""
 
 	# Use the name in the No-Intro DB instead of the one in the GDB. (default true)
 		useNoIntroName=-use_nointro_name=true
+
+	# The path to use for videos in gamelist.xml. (default "images")
+		videoPath=-video_path="./downloaded_images"
+
+	# The suffix added after rom name when creating video files. (default "-video")
+		videoSuffix=-video_suffix="-video"
 
 	# Use N worker threads to process roms. (default 1)
 		workersN=-workers=4
@@ -228,7 +252,7 @@ for i in $system; do
 # Scraping roms
 	echo "${dict[17]} $i ${dict[18]}"
 	echo ""
-"$scriptPath/scraper" $appendMode $arcade -rom_dir="$i" $imagePath -image_dir="$i/${imagePath:14}" $imageSuffix -output_file="$i/gamelist.xml" -missing="$i/_${i}_missing.txt" $addNotFound $consoleImg $consoleSrc $downloadImg $extraExt $imgFormat $langSS $maxHeight $maxWidth $noThumb $thumbOnly $refreshXML $regionSS $username $password $useFilename $useNoIntroName $workersN
+"$scriptPath/scraper" $appendMode $arcade -rom_dir="$i" $imagePath -image_dir="$i/${imagePath:14}" $imageSuffix -marquee_dir="$i/${marqueePath:16}" $marqueeSuffix -video_dir="$i/${videoPath:14}" $videoSuffix $convertVideo -output_file="$i/gamelist.xml" -missing="$i/_${i}_missing.txt" $addNotFound $consoleImg $consoleSrc $downloadImg $downloadMarquee $downloadVideo $extraExt $imgFormat $marqueeFormat $langSS $maxHeight $maxWidth $noThumb $thumbOnly $refreshXML $regionSS $username $password $useFilename $useNoIntroName $workersN
 	echo ""
 done
 
