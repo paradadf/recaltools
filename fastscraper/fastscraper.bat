@@ -1,6 +1,6 @@
 @echo off
 color 3f
-set releaseDate=25.04.2017
+set releaseDate=15.06.2017
 title fastscraper ver. %releaseDate%
 
 rem Set ScreenScraper credentials
@@ -16,9 +16,18 @@ rem Flags - Static parameters
 
 	rem Comma seperated order to prefer console sources, ss=screenscraper, ovgdb=OpenVGDB, gdb=theGamesDB (default "gdb")
 		set consoleSrc=-console_src="ss"
-		
+
+	rem If true, convert videos for the Raspberry Pi (e.g. 320x240@30fps) NOTE: This needs HandBrakeCLI installed
+		set convertVideo=-convert_videos="true"
+
 	rem If false, don't download any images, instead see if the expected file is stored locally already. (default true)
 		set downloadImg=-download_images=true
+
+	rem If true, download marquees.
+		set downloadMarquee=-download_marquees="false"
+
+	rem If true, download videos.
+		set downloadVideo=-download_videos="false"
 
 	rem Comma separated list of extensions to also include in the scraper.
 		set extraExt=-extra_ext=".scummvm,.ipf,.mx1,.mx2,.exe,.ws,.wsc,.wad,.dsk,.tap,.trd,.tzx,.z80,.p,.a0,.crt,.nib,.do,.po"
@@ -40,6 +49,15 @@ rem Flags - Static parameters
 		
 	rem Comma seperated order to prefer mame sources, ss=screenscraper, adb=arcadeitalia, mamedb=mamedb-mirror, gdb=theGamesDB-neogeo (default "adb,gdb")
 		set mameSrc=-mame_src="ss"
+
+	rem jpg or png, the format to write the marquees. (default "png")
+		set marqueeFormat=-marquee_format="png"
+
+	rem The path to use for marquees in gamelist.xml. (default "images")
+		set marqueePath=-marquee_path="./downloaded_images"
+
+	rem The suffix added after rom name when creating marquee files. (default "-marquee")
+		set marqueeSuffix=-marquee_suffix="-marquee"
 
 	rem The max height of images. Larger images will be resized.
 		set maxHeight=-max_height=0
@@ -70,6 +88,12 @@ rem Flags - Static parameters
 
 	rem Use the name in the No-Intro DB instead of the one in the GDB. (default true)
 		set useNoIntroName=-use_nointro_name=true
+
+    rem The path to use for videos in gamelist.xml. (default "images")
+		set videoPath=-video_path="./downloaded_images"
+
+    rem The suffix added after rom name when creating video files. (default "-video")
+		set videoSuffix=-video_suffix="-video"
 
 	rem Use N worker threads to process roms. (default 1)
 		set workersN=-workers=4
@@ -195,7 +219,7 @@ rem If mame device, consoleImg not used
 rem Scraping roms
 	echo %dict[17]% %%i %dict[18]%
 	echo.
-"%~dp0scraper.exe" %appendMode% !arcade! -rom_dir="%%i" %imagePath% -image_dir="%%i\%imagePath:~15,-1%" %imageSuffix% -output_file="%%i\gamelist.xml" -missing="%%i\_%%i_missing.txt" %addNotFound% !consoleImg! %consoleSrc% %downloadImg% %extraExt% %imgFormat% %langSS% %maxHeight% %maxWidth% %noThumb% %thumbOnly% %refreshXML% %regionSS% %username% %password% %useFilename% %useNoIntroName% %workersN%
+"%~dp0scraper.exe" %appendMode% !arcade! -rom_dir="%%i" %imagePath% -image_dir="%%i\%imagePath:~15,-1%" %imageSuffix% -marquee_dir="%%i\%marqueePath:~17,-1%" %marqueeSuffix% -video_dir="%%i\%videoPath:~15,-1%" %videoSuffix% %convertVideo% -output_file="%%i\gamelist.xml" -missing="%%i\_%%i_missing.txt" %addNotFound% !consoleImg! %consoleSrc% %downloadImg% %downloadMarquee% %downloadVideo% %extraExt% %imgFormat% %marqueeFormat% %langSS% %maxHeight% %maxWidth% %noThumb% %thumbOnly% %refreshXML% %regionSS% %username% %password% %useFilename% %useNoIntroName% %workersN%
 	echo.
 	
 )
