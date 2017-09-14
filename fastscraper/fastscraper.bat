@@ -1,17 +1,20 @@
 @echo off
 color 3f
-set releaseDate=15.06.2017
+set releaseDate=14.09.2017
 title fastscraper ver. %releaseDate%
 
 rem Set ScreenScraper credentials
 set username=""
 set password=""
 
+rem Dictionary (auto, es, de, fr, en)
+set lang=auto
+
 rem Flags - Static parameters
 	rem If true, add roms that are not found as an empty gamelist entry.
 		set addNotFound=-add_not_found=false
 
-	rem Comma separated order to prefer images, s=snapshot, b=boxart, f=fanart, a=banner, l=logo, 3b=3D boxart, mix3=Standard 3 mix, mix4=Standard 4 mix. (default "b")
+	rem Comma separated order to prefer images, s=snapshot, b=boxart, f=fanart, a=banner, l=logo, 3b=3D boxart, cart=cartridge, clabel=cartridge label, mix3=Standard 3 mix, mix4=Standard 4 mix. (default "b")
 		set consoleImg=-console_img="mix3,b,s"
 
 	rem Comma seperated order to prefer console sources, ss=screenscraper, ovgdb=OpenVGDB, gdb=theGamesDB (default "gdb")
@@ -107,10 +110,13 @@ rem Create dictionary
 		set language=%language:~0,-3%
 
 	rem Select dictionary
-		if "%language%"=="es" goto es
-		if "%language%"=="de" goto de
-		if "%language%"=="fr" goto fr
-		goto *
+		for %%a in (es de fr en) do (
+			if "%%a"=="%lang%" set language=%lang%
+		)
+				if "%language%"=="es" goto es
+				if "%language%"=="de" goto de
+				if "%language%"=="fr" goto fr
+				goto *
 		
 		:es
 			set "dict=ERROR: Sin conexión a internet. Saliendo...;no es una plataforma soportada.;ERROR: Imposible descargar el scraper. Saliendo...;ERROR: Imposible descomprimir el scraper. Saliendo...;ERROR: Imposible comprobar actualizaciones en GitHub.;Actualizando sselph scraper de;a;, espere por favor...;Descargando sselph scraper;Abriendo Explorador de Carpetas...;Explorador de Carpetas para;aun no implementado, lo siento!;Carpeta de roms seleccionada:;No olvides detener EmulationStation antes de scrapear!;¿Qué sistema(s) desea scrapear? Escribe "all" para todos los sistemas o "cd" para abrir el navegador de carpetas.;Entrada incorrecta!;¿Deseas anexar los gamelists existentes? [Y/N]:;Scrapeando;en progreso. Espere por favor...;Inicio;Fin;Duración;Por favor, seleccione la carpeta de roms; Scrapeado finalizado!" & goto createDict
