@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-releaseDate=14.09.2017
+releaseDate=16.09.2017
 echo "fastscraper ver. $releaseDate"
 
 # Set ScreenScraper credentials
@@ -109,7 +109,7 @@ lang=auto
 	fi
 
 	# Select dictionary
-	if [[ "$lang" =~ ^(es|de|fr|en)$ ]]; then language=$lang
+	if [[ "$lang" =~ ^(es|de|fr|en)$ ]]; then language=$lang; fi
 	case $language in
 		es)
 			dict=('ERROR: Sin conexión a internet. Saliendo...' 'no es una plataforma soportada.' 'ERROR: Imposible descargar el scraper. Saliendo...' 'ERROR: Imposible descomprimir el scraper. Saliendo...' 'ERROR: Imposible comprobar actualizaciones en GitHub.' 'Actualizando sselph scraper de' 'a' ', espere por favor...' 'Descargando sselph scraper' 'Abriendo Explorador de Carpetas...' 'Explorador de Carpetas para' ' aun no implementado, lo siento!' 'Carpeta de roms seleccionada:' 'No olvides detener EmulationStation antes de scrapear!' '¿Qué sistema(s) desea scrapear? Escriba "all" para todos los sistemas o "cd" para abrir el navegador de carpetas.' 'Entrada incorrecta!' '¿Deseas anexar los gamelists existentes? [Y/N]:' 'Scrapeando' 'en progreso. Espere por favor...' 'Inicio' 'Fin' 'Duración' 'Por favor, seleccione la carpeta de roms.' 'Scrapeado finalizado!') ;;
