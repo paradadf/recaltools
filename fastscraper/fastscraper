@@ -256,7 +256,7 @@ for i in $system; do
 # Scraping roms
 	echo "${dict[17]} $i ${dict[18]}"
 	echo ""
-"$scriptPath/scraper" $appendMode $arcade -rom_dir="$i" $imagePath -image_dir="$i/${imagePath:14}" $imageSuffix -marquee_dir="$i/${marqueePath:16}" $marqueeSuffix -video_dir="$i/${videoPath:14}" $videoSuffix $convertVideo -output_file="$i/gamelist.xml" -missing="$i/_${i}_missing.txt" $addNotFound $consoleImg $consoleSrc $downloadImg $downloadMarquee $downloadVideo $extraExt $imgFormat $marqueeFormat $langSS $maxHeight $maxWidth $noThumb $thumbOnly $refreshXML $regionSS $username $password $useFilename $useNoIntroName $workersN
+"$scriptPath/scraper" $appendMode $arcade -rom_dir="$i" $imagePath -image_dir="$i/${imagePath:14}" $imageSuffix $marqueePath -marquee_dir="$i/${marqueePath:16}" $marqueeSuffix $videoPath -video_dir="$i/${videoPath:14}" $videoSuffix $convertVideo -output_file="$i/gamelist.xml" -missing="$i/_${i}_missing.txt" $addNotFound $consoleImg $consoleSrc $downloadImg $downloadMarquee $downloadVideo $extraExt $imgFormat $marqueeFormat $langSS $maxHeight $maxWidth $noThumb $thumbOnly $refreshXML $regionSS $username $password $useFilename $useNoIntroName $workersN
 	echo ""
 done
 
