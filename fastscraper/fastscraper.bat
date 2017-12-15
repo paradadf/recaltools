@@ -1,6 +1,6 @@
 @echo off
 color 3f
-set releaseDate=14.09.2017
+set releaseDate=15.12.2017
 title fastscraper ver. %releaseDate%
 
 rem Set ScreenScraper credentials
@@ -20,11 +20,11 @@ rem Flags - Static parameters
 	rem Comma seperated order to prefer console sources, ss=screenscraper, ovgdb=OpenVGDB, gdb=theGamesDB (default "gdb")
 		set consoleSrc=-console_src="ss"
 
-	rem If true, convert videos for the Raspberry Pi (e.g. 320x240@30fps) NOTE: This needs HandBrakeCLI installed
+	rem If true, convert videos for the Raspberry Pi (e.g. 320x240@30fps) NOTE: This needs ffmpeg installed
 		set convertVideo=-convert_videos="true"
 
 	rem If false, don't download any images, instead see if the expected file is stored locally already. (default true)
-		set downloadImg=-download_images=true
+		set downloadImg=-download_images="true"
 
 	rem If true, download marquees.
 		set downloadMarquee=-download_marquees="false"
@@ -159,7 +159,7 @@ for /F "delims=" %%a in ('PowerShell Invoke-RestMethod -Method Get -Uri %Uri% ^|
 rem Download or update scraper if needed
 if exist "scraper.exe" (
 	for /F "tokens=* usebackq" %%a in (`scraper.exe -version`) do (
-		if "%%a"=="%scraperVersion%" goto systemSelection
+		if "%%a" GEQ "%scraperVersion%" goto systemSelection
 		if "%scraperVersion%"=="" echo %dict[4]% & echo. & goto systemSelection
 		echo %dict[5]% %%a %dict[6]% %scraperVersion%%dict[7]% & echo.
 	)
