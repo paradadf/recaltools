@@ -1,6 +1,6 @@
 @echo off
 color 3f
-set releaseDate=15.12.2017
+set releaseDate=31.01.2018
 title fastscraper ver. %releaseDate%
 
 rem Set ScreenScraper credentials
@@ -14,10 +14,10 @@ rem Flags - Static parameters
 	rem If true, add roms that are not found as an empty gamelist entry.
 		set addNotFound=-add_not_found=false
 
-	rem Comma separated order to prefer images, s=snapshot, b=boxart, f=fanart, a=banner, l=logo, 3b=3D boxart, cart=cartridge, clabel=cartridge label, mix3=Standard 3 mix, mix4=Standard 4 mix. (default "b")
+	rem Comma-separated order to prefer images, s=snapshot, b=boxart, f=fanart, a=banner, l=logo, 3b=3D boxart, cart=cartridge, clabel=cartridge label, mix3=Standard 3 mix, mix4=Standard 4 mix. (default "b")
 		set consoleImg=-console_img="mix3,b,s"
 
-	rem Comma seperated order to prefer console sources, ss=screenscraper, ovgdb=OpenVGDB, gdb=theGamesDB (default "gdb")
+	rem Comma-separated order to prefer console sources, ss=screenscraper, ovgdb=OpenVGDB, gdb=theGamesDB (default "gdb")
 		set consoleSrc=-console_src="ss"
 
 	rem If true, convert videos for the Raspberry Pi (e.g. 320x240@30fps) NOTE: This needs ffmpeg installed
@@ -32,7 +32,7 @@ rem Flags - Static parameters
 	rem If true, download videos.
 		set downloadVideo=-download_videos="false"
 
-	rem Comma separated list of extensions to also include in the scraper.
+	rem Comma-separated list of extensions to also include in the scraper.
 		set extraExt=-extra_ext=".scummvm,.ipf,.mx1,.mx2,.exe,.ws,.wsc,.wad,.dsk,.tap,.trd,.tzx,.z80,.p,.a0,.crt,.nib,.do,.po"
 
 	rem jpg or png, the format to write the images. (default "jpg")
@@ -41,16 +41,16 @@ rem Flags - Static parameters
 	rem The path to use for images in gamelist.xml. (default "images")
 		set imagePath=-image_path="./downloaded_images"
 
-	rem  The suffix added after rom name when creating image files. (default "-image")
+	rem The suffix added after rom name when creating image files. (default "-image")
 		set imageSuffix=-image_suffix="-image"
 		
 	rem The order to choose for language if there is more than one for a value. (en, fr, es, de, pt) (default "en")
 		set langSS=-lang="en,es,pt,de,fr"
 
-	rem Comma separated order to prefer images, s=snap, t=title, m=marquee, c=cabniet, b=boxart, 3b=3D-boxart, fly=flyer. (default "t,m,s,c")
+	rem Comma-separated order to prefer images, s=snap, t=title, m=marquee, c=cabinet, b=boxart, 3b=3D-boxart, fly=flyer. (default "t,m,s,c")
 		set mameImg=-mame_img="b,s,fly,m,t"
 		
-	rem Comma seperated order to prefer mame sources, ss=screenscraper, adb=arcadeitalia, mamedb=mamedb-mirror, gdb=theGamesDB-neogeo (default "adb,gdb")
+	rem Comma-separated order to prefer mame sources, ss=screenscraper, adb=arcadeitalia, mamedb=mamedb-mirror, gdb=theGamesDB-neogeo (default "adb,gdb")
 		set mameSrc=-mame_src="ss"
 
 	rem jpg or png, the format to write the marquees. (default "png")
@@ -106,9 +106,11 @@ rem Create dictionary
 		chcp 65001 >nul
 
 	rem Get OS's language
+		if not "%lang%"=="auto" goto selectDictionary
 		for /F "tokens=3" %%a in ('reg Query "HKCU\Control Panel\Desktop" /V PreferredUILanguages ^| find "PreferredUILanguages"') do set language=%%a
 		set language=%language:~0,-3%
 
+	:selectDictionary
 	rem Select dictionary
 		for %%a in (es de fr en) do (
 			if "%%a"=="%lang%" set language=%lang%
