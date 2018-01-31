@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-releaseDate=15.12.2017
+releaseDate=31.01.2018
 echo "fastscraper ver. $releaseDate"
 
 # Set ScreenScraper credentials
@@ -13,10 +13,10 @@ lang=auto
 	# If true, add roms that are not found as an empty gamelist entry.
 		addNotFound=-add_not_found=false
 
-	# Comma separated order to prefer images, s=snapshot, b=boxart, f=fanart, a=banner, l=logo, 3b=3D boxart, cart=cartridge, clabel=cartridge label, mix3=Standard 3 mix, mix4=Standard 4 mix. (default "b")
+	# Comma-separated order to prefer images, s=snapshot, b=boxart, f=fanart, a=banner, l=logo, 3b=3D boxart, cart=cartridge, clabel=cartridge label, mix3=Standard 3 mix, mix4=Standard 4 mix. (default "b")
 		consoleImg=-console_img="mix3,b,s"
 
-	# Comma seperated order to prefer console sources, ss=screenscraper, ovgdb=OpenVGDB, gdb=theGamesDB (default "gdb")
+	# Comma-separated order to prefer console sources, ss=screenscraper, ovgdb=OpenVGDB, gdb=theGamesDB (default "gdb")
 		consoleSrc=-console_src="ss"
 
 	# If true, convert videos for the Raspberry Pi (e.g. 320x240@30fps) NOTE: This needs ffmpeg installed
@@ -40,16 +40,16 @@ lang=auto
 	# The path to use for images in gamelist.xml. (default "images")
 		imagePath=-image_path="./downloaded_images"
 
-	#  The suffix added after rom name when creating image files. (default "-image")
+	# The suffix added after rom name when creating image files. (default "-image")
 		imageSuffix=-image_suffix="-image"
 		
 	# The order to choose for language if there is more than one for a value. (en, fr, es, de, pt) (default "en")
 		langSS=-lang="en,es,pt,de,fr"
 
-	# Comma separated order to prefer images, s=snap, t=title, m=marquee, c=cabniet, b=boxart, 3b=3D-boxart, fly=flyer. (default "t,m,s,c")
+	# Comma-separated order to prefer images, s=snap, t=title, m=marquee, c=cabinet, b=boxart, 3b=3D-boxart, fly=flyer. (default "t,m,s,c")
 		mameImg=-mame_img="b,s,fly,m,t"
 		
-	# Comma seperated order to prefer mame sources, ss=screenscraper, adb=arcadeitalia, mamedb=mamedb-mirror, gdb=theGamesDB-neogeo (default "adb,gdb")
+	# Comma-separated order to prefer mame sources, ss=screenscraper, adb=arcadeitalia, mamedb=mamedb-mirror, gdb=theGamesDB-neogeo (default "adb,gdb")
 		mameSrc=-mame_src="ss"
 
 	# jpg or png, the format to write the marquees. (default "png")
