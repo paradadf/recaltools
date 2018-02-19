@@ -21,7 +21,7 @@ lang=auto
 
 	# If true, convert videos for the Raspberry Pi (e.g. 320x240@30fps) NOTE: This needs ffmpeg installed
 		convertVideo=-convert_videos="true"
-		
+
 	# If false, don't download any images, instead see if the expected file is stored locally already. (default true)
 		downloadImg=-download_images="true"
 
@@ -42,13 +42,13 @@ lang=auto
 
 	# The suffix added after rom name when creating image files. (default "-image")
 		imageSuffix=-image_suffix="-image"
-		
+
 	# The order to choose for language if there is more than one for a value. (en, fr, es, de, pt) (default "en")
 		langSS=-lang="en,es,pt,de,fr"
 
 	# Comma-separated order to prefer images, s=snap, t=title, m=marquee, c=cabinet, b=boxart, 3b=3D-boxart, fly=flyer. (default "t,m,s,c")
 		mameImg=-mame_img="b,s,fly,m,t"
-		
+
 	# Comma-separated order to prefer mame sources, ss=screenscraper, adb=arcadeitalia, mamedb=mamedb-mirror, gdb=theGamesDB-neogeo (default "adb,gdb")
 		mameSrc=-mame_src="ss"
 
@@ -69,7 +69,7 @@ lang=auto
 
 	# Don't add thumbnails to the gamelist.
 		noThumb=-no_thumb=true
-		
+
 	# Download the thumbnail for both the image and thumb (faster). (default "false")
 		thumbOnly=-thumb_only=false
 
@@ -135,7 +135,7 @@ download_scraper()
 {
 # Detect OS architecture
 	if [ $(uname -m) == "armv7l" ]; then arch=rpi2;
-	elif [ $(uname -m) == "armv6l" ]; then 
+	elif [ $(uname -m) == "armv6l" ]; then
 		arch=rpi
 		thumbOnly=-thumb_only=true
 		workersN=-workers=1
@@ -177,7 +177,7 @@ scraperVersion=$(curl -s https://api.github.com/repos/sselph/scraper/releases/la
 # Download or update scraper if needed
 if [ -f "./scraper" ]; then
 	chmod u+x ./scraper
-	if [ "$scraperVersion" -ge "$(./scraper -version)" ]; then :;
+	if [ "$scraperVersion" = "$(./scraper -version)" ]; then :;
 	else
 		if [ "$scraperVersion" = "" ]; then
 			echo "${dict[4]}"
@@ -279,5 +279,5 @@ echo "${dict[20]}		: $endTime"
 echo "           	------------"
 echo "${dict[21]}	: $DURATION"
 
-echo ""	
+echo ""
 exit 0
