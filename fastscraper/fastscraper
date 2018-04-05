@@ -177,8 +177,7 @@ scraperVersion=$(curl -s https://api.github.com/repos/sselph/scraper/releases/la
 # Download or update scraper if needed
 if [ -f "./scraper" ]; then
 	chmod u+x ./scraper
-	if [ "$scraperVersion" -ge "$(./scraper -version)" ]; then :;
-	else
+	if [ "$(./scraper -version)" \< "$scraperVersion" ]; then
 		if [ "$scraperVersion" = "" ]; then
 			echo "${dict[4]}"
 			echo ""
